@@ -44,9 +44,9 @@ export const printInet = (iNet: InteractionNet): void => {
       }
 
       // Print guards if they exist
-      if (element.label.guards && element.label.guards.size > 0) {
-        const guardDetails = Array.from(element.label.guards.entries())
-          .map(([_, guard]) => `${guard.condition || "defaultflow"}`)
+      if (element.label.guard) {
+        const guardDetails = Array.from(element.label.guard.conditions.entries())
+          .map(([_, guard]) => `${guard || "defaultflow"}`)
           .join(", ");
         transitionDetails += ` !Guards: ${guardDetails}`;
       }
