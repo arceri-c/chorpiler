@@ -94,7 +94,6 @@ export class Simulator implements ISimulator {
 
             const guard = new Guard(`conditions[${condID}] == true`)
             guard.conditions.set("", `conditions & ${condID} == ${condID}`);
-            //transition.label.guards.clear();
             transition.label.guard = guard;
           }
           if (transition.label instanceof TaskLabel) {      

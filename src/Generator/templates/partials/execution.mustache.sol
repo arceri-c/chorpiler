@@ -10,12 +10,12 @@ while(_tokenState != 0) {
   if (_tokenState & {{{consume}}} == {{{consume}}}) {
     {{#transitions}} 
     {{#isDecision}}
-    {{^elseBranch}}
+    {{^defaultBranch}}
     if ({{{decision}}}) {
-    {{/elseBranch}}
-    {{#elseBranch}}
+    {{/defaultBranch}}
+    {{#defaultBranch}}
     else {
-    {{/elseBranch}}
+    {{/defaultBranch}}
       {{> transition }}
     }
     {{/isDecision}}

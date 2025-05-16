@@ -47,18 +47,22 @@ contract ProcessExecution {
         }
       }
       if (_tokenState & 4 == 4) {
-        // <--- ChoreographyTask_0z1rm3g Ask 1st level support --->
-        if (4 == id && msg.sender == participants[1]) {
-        // <--- custom code for task here --->
-        _tokenState &= ~uint(4);
-        _tokenState |= 16;
-        id = 0;
-        continue; 
+        if (conditions & 4 == 4) {
+          // <---  auto transition  --->
+          _tokenState &= ~uint(4);
+          _tokenState |= 8;
+          continue; 
         }
-        // <---  auto transition  --->
-        _tokenState &= ~uint(4);
-        _tokenState |= 8;
-        continue; 
+        else {
+          // <--- ChoreographyTask_0z1rm3g Ask 1st level support --->
+          if (4 == id && msg.sender == participants[1]) {
+          // <--- custom code for task here --->
+          _tokenState &= ~uint(4);
+          _tokenState |= 16;
+          id = 0;
+          continue; 
+          }
+        }
       }
       if (_tokenState & 32 == 32) {
         // <--- ChoreographyTask_1qccz6z Provide feedback --->
@@ -71,32 +75,40 @@ contract ProcessExecution {
         }
       }
       if (_tokenState & 16 == 16) {
-        // <--- ChoreographyTask_1qslyew Ask 2nd level support --->
-        if (6 == id && msg.sender == participants[2]) {
-        // <--- custom code for task here --->
-        _tokenState &= ~uint(16);
-        _tokenState |= 64;
-        id = 0;
-        continue; 
+        if (conditions & 2 == 2) {
+          // <---  auto transition  --->
+          _tokenState &= ~uint(16);
+          _tokenState |= 32;
+          continue; 
         }
-        // <---  auto transition  --->
-        _tokenState &= ~uint(16);
-        _tokenState |= 32;
-        continue; 
+        else {
+          // <--- ChoreographyTask_1qslyew Ask 2nd level support --->
+          if (6 == id && msg.sender == participants[2]) {
+          // <--- custom code for task here --->
+          _tokenState &= ~uint(16);
+          _tokenState |= 64;
+          id = 0;
+          continue; 
+          }
+        }
       }
       if (_tokenState & 64 == 64) {
-        // <--- ChoreographyTask_15fmbmw Ask developer --->
-        if (7 == id && msg.sender == participants[3]) {
-        // <--- custom code for task here --->
-        _tokenState &= ~uint(64);
-        _tokenState |= 128;
-        id = 0;
-        continue; 
+        if (conditions & 1 == 1) {
+          // <---  auto transition  --->
+          _tokenState &= ~uint(64);
+          _tokenState |= 256;
+          continue; 
         }
-        // <---  auto transition  --->
-        _tokenState &= ~uint(64);
-        _tokenState |= 256;
-        continue; 
+        else {
+          // <--- ChoreographyTask_15fmbmw Ask developer --->
+          if (7 == id && msg.sender == participants[3]) {
+          // <--- custom code for task here --->
+          _tokenState &= ~uint(64);
+          _tokenState |= 128;
+          id = 0;
+          continue; 
+          }
+        }
       }
       if (_tokenState & 128 == 128) {
         // <--- ChoreographyTask_15tec1l Provide feedback --->

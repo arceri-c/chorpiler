@@ -28,30 +28,38 @@ contract PizzaDelivery {
         }
       }
       if (_tokenState & 2 == 2) {
-        // <--- ChoreographyTask_1jrfmx8 Announce Delivery --->
-        if (2 == id && msg.sender == participants[1]) {
-        // <--- custom code for task here --->
-        _tokenState &= ~uint(2);
-        _tokenState |= 4;
-        id = 0;
-        continue; 
+        if (conditions & 4 == 4) {
+          // <--- ChoreographyTask_1wapvxj New Activity --->
+          if (4 == id && msg.sender == participants[1]) {
+          // <--- custom code for task here --->
+          _tokenState &= ~uint(2);
+          _tokenState |= 4;
+          id = 0;
+          continue; 
+          }
         }
-        // <--- ChoreographyTask_1wapvxj New Activity --->
-        if (4 == id && msg.sender == participants[1]) {
-        // <--- custom code for task here --->
-        _tokenState &= ~uint(2);
-        _tokenState |= 4;
-        id = 0;
-        continue; 
+        if (conditions & 1 == 1) {
+          // <---  auto transition  --->
+          _tokenState &= ~uint(2);
+          _tokenState |= 4;
+          continue; 
         }
-        // <---  auto transition  --->
-        _tokenState &= ~uint(2);
-        _tokenState |= 4;
-        continue; 
-        // <---  auto transition  --->
-        _tokenState &= ~uint(2);
-        _tokenState |= 4;
-        continue; 
+        if (conditions & 2 == 2) {
+          // <---  auto transition  --->
+          _tokenState &= ~uint(2);
+          _tokenState |= 4;
+          continue; 
+        }
+        else {
+          // <--- ChoreographyTask_1jrfmx8 Announce Delivery --->
+          if (2 == id && msg.sender == participants[1]) {
+          // <--- custom code for task here --->
+          _tokenState &= ~uint(2);
+          _tokenState |= 4;
+          id = 0;
+          continue; 
+          }
+        }
       }
       if (_tokenState & 4 == 4) {
         // <--- ChoreographyTask_1797ws1 Deliver Pizza --->
