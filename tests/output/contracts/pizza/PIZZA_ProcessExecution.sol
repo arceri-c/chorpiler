@@ -28,7 +28,7 @@ contract PIZZA_ProcessExecution {
         }
       }
       if (_tokenState & 2 == 2) {
-        if ((items==true)) {
+        if (items==true) {
           // <---  auto transition  --->
           _tokenState &= ~uint(2);
           _tokenState |= 8;

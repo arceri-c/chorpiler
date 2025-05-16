@@ -157,9 +157,9 @@ export class INetEncoder {
     transitionMarkings.set(iNet.end.id, 0);
 
     for (const element of transitions) {
-
       // build condition for transition
-      const { condition, defaultBranch } = this.buildCondition(element.label.guards);
+      const condition = element.label.guard ? this.buildCondition(element.label.guard) : undefined;
+      const defaultBranch = element.label.guard ? element.label.guard.default : undefined;
 
       // determine sequence flows
       // console.log("ID", references.get(element.id));
@@ -230,24 +230,8 @@ export class INetEncoder {
       subEncoded.transitions.get(beforeEnd.id)!.outTo = { id: parent_process.id, produce };
   }
 
-  private buildCondition(guardsMap: Map<string, Guard>) {
-    let condition = "";
-    let defaultBranch = false;
-
-    const guards = [...guardsMap.values()]
-    if (guards.length > 0) {
-      const first = guards.at(0)!;
-      if (first.default) defaultBranch = true;
-      if (first.condition) condition += `(${first.condition})`;
-    }
-    if (guards.length > 1) {
-      guards.shift();
-      for (const guard of guards) {
-        if (guard.default) defaultBranch = true;
-        if (guard.condition) condition += `&& (${guard.condition})`;
-      }
-    }
-    return { condition, defaultBranch };
+  private buildCondition(guard: Guard) {
+    return [...guard.conditions.values()].join(' && ');
   }
 
   /**
@@ -407,10 +391,19 @@ export class INetEncoder {
   }
 
   private copyProperties(copyFrom: Transition, copyTo: Transition[]) {
-    if (copyFrom.label.guards.size !== 0) {
-      for (const transition of copyTo) {
-        // copy gateway guards
-        transition.label.guards = new Map([...copyFrom.label.guards, ...transition.label.guards]);
+    if (copyFrom.label.guard) {
+      for (const to of copyTo) {
+        // copy guards
+        if (!to.label.guard) {
+          to.label.guard = copyFrom.label.guard;
+          continue;
+        } else {
+          to.label.guard.conditions = new Map([...copyFrom.label.guard.conditions, ...to.label.guard.conditions]);
+          // Ensure no label can be defaultBranch if one of the labels is a condition
+          if (to.label.guard.conditions.size > 0) {
+            to.label.guard.default = false;
+          }
+        }
       }
     }
     // adjust subnet source and target if necessary

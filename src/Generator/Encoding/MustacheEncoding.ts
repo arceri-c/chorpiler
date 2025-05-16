@@ -79,6 +79,8 @@ export class MustacheEncoding extends MustacheProcessEncoding implements IFromEn
     const main = MustacheProcessEncoding.fromEncoding(encoding);
     const subProcesses = Array.from(encoding.subProcesses.values()).map(MustacheProcessEncoding.fromEncoding);
 
+    console.log(encoding.states);
+
     return new MustacheEncoding(
       subProcesses, 
       main.id,
@@ -103,8 +105,7 @@ class Transition {
     public decision: string,
     public isEnd: boolean,
     public defaultBranch: boolean,
-    public outTo: { id: string; produce: string } | null,
-    public last: boolean | null = null,
+    public outTo: { id: string; produce: string } | null
   ) {
     if (this.taskID) {
       this.conditions.push({content: this.taskID, hasID: true, last: false})
@@ -127,16 +128,15 @@ class State {
     public last: boolean | null = null
   ) {
     const defaultBranches = this.transitions.filter(t => t.defaultBranch);
+    assert(defaultBranches.length <= 1);
     if (defaultBranches.length > 0) {
       this.isDecision = true;
-      this.transitions.sort((a, b) => {
-        if (a.defaultBranch && !b.defaultBranch) return 1;
-        if (!a.defaultBranch && b.defaultBranch) return -1;
-        return 0;
-      });
+      this.transitions = [
+        ...this.transitions.filter(t => !t.defaultBranch),
+        ...defaultBranches,
+      ];
       if (transitions.length > 0) {
         assert(transitions[transitions.length - 1].defaultBranch, "The last transition must be the defaultBranch.");
-        transitions[transitions.length - 1].last = true;
       }
     }
   }

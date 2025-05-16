@@ -100,7 +100,7 @@ contract RA_ProcessExecution {
         }
       }
       if (_tokenState & 2 == 2) {
-        if ((bond > 4 * weeklyRent)) {
+        if (bond > 4 * weeklyRent) {
           // <---  auto transition  --->
           _tokenState &= ~uint(2);
           _tokenState |= 4;

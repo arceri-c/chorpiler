@@ -285,11 +285,10 @@ export class INetFastXMLParser implements INetParser {
         if (!expression || !lang)
           throw new Error(`XOR outgoing flow (${flowID}) without proper (language and expression) script condition expression`);
         
-        guard.condition = expression;
-        guard.language = lang;
+        guard.conditions.set(flowID, expression);
       }
 
-      transition.label.guards.set(flowID, guard);
+      transition.label.guard = guard;
     }
 
     /**

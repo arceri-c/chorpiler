@@ -28,17 +28,7 @@ contract PizzaDelivery {
         }
       }
       if (_tokenState & 2 == 2) {
-        if () {
-          // <--- ChoreographyTask_1jrfmx8 Announce Delivery --->
-          if (2 == id && msg.sender == participants[1]) {
-          // <--- custom code for task here --->
-          _tokenState &= ~uint(2);
-          _tokenState |= 4;
-          id = 0;
-          continue; 
-          }
-        }
-        if ((conditions & 2 == 2)&& (conditions & 4 == 4)) {
+        if (conditions & 4 == 4) {
           // <--- ChoreographyTask_1wapvxj New Activity --->
           if (4 == id && msg.sender == participants[1]) {
           // <--- custom code for task here --->
@@ -48,17 +38,27 @@ contract PizzaDelivery {
           continue; 
           }
         }
-        if ((conditions & 1 == 1)) {
+        if (conditions & 1 == 1) {
+          // <---  auto transition  --->
+          _tokenState &= ~uint(2);
+          _tokenState |= 4;
+          continue; 
+        }
+        if (conditions & 2 == 2) {
           // <---  auto transition  --->
           _tokenState &= ~uint(2);
           _tokenState |= 4;
           continue; 
         }
         else {
-          // <---  auto transition  --->
+          // <--- ChoreographyTask_1jrfmx8 Announce Delivery --->
+          if (2 == id && msg.sender == participants[1]) {
+          // <--- custom code for task here --->
           _tokenState &= ~uint(2);
           _tokenState |= 4;
+          id = 0;
           continue; 
+          }
         }
       }
       if (_tokenState & 4 == 4) {

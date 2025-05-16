@@ -33,16 +33,13 @@ export class Transition extends Element {
 
 // Transitions can have labels
 export class Label {
-  guards = new Map<string, Guard>();
-  constructor(public type: LabelType) { }
+  constructor(public type: LabelType, public guard?: Guard | null) { }
 }
 
 // Labels can have guards
 export class Guard {
   default: boolean = false;
-  condition: string = "";
-  // condition expression language, e.g., 'Solidity'
-  language: string = "";
+  conditions = new Map<string, string>();
 
   constructor(
     public name: string,

@@ -47,7 +47,7 @@ contract IM_ProcessExecution {
         }
       }
       if (_tokenState & 4 == 4) {
-        if ((resolved==true)) {
+        if (resolved==true) {
           // <---  auto transition  --->
           _tokenState &= ~uint(4);
           _tokenState |= 8;
@@ -75,7 +75,7 @@ contract IM_ProcessExecution {
         }
       }
       if (_tokenState & 16 == 16) {
-        if ((resolved==true)) {
+        if (resolved==true) {
           // <---  auto transition  --->
           _tokenState &= ~uint(16);
           _tokenState |= 32;
@@ -93,7 +93,7 @@ contract IM_ProcessExecution {
         }
       }
       if (_tokenState & 64 == 64) {
-        if ((resolved==true)) {
+        if (resolved==true) {
           // <---  auto transition  --->
           _tokenState &= ~uint(64);
           _tokenState |= 256;

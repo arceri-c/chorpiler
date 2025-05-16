@@ -34,7 +34,7 @@ contract sid_fcc8b91c_8ddf_4dfa_9dbe_c492016f54f1 {
         }
       }
       if (_tokenState & 4 == 4) {
-        if ((conditions & 2 == 2)) {
+        if (conditions & 2 == 2) {
           // <--- sid-63049054-FF0D-448E-A42E-7B917601D74C Fehlende Unterlagen anfordern --->
           if (2 == id && msg.sender == participants[2]) {
           // <--- custom code for task here --->
@@ -62,7 +62,7 @@ contract sid_fcc8b91c_8ddf_4dfa_9dbe_c492016f54f1 {
         }
       }
       if (_tokenState & 16 == 16) {
-        if ((conditions & 1 == 1)) {
+        if (conditions & 1 == 1) {
           // <--- sid-996BBBD2-CA44-45A3-BD54-6C7090363FBF Zusage senden --->
           if (4 == id && msg.sender == participants[6]) {
           // <--- custom code for task here --->

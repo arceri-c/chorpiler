@@ -122,6 +122,14 @@ describe('Test Parsing and Generation', () => {
       })
     });
 
+    it('Compile model with a lot of XOR skips to Sol contract', () => {
+      return readFile(path.join(BPMN_PATH, 'skip.bpmn')).then(async (data) => {
+        const iNet = await parser.fromXML(data);
+        console.log(await new SolDefaultContractGenerator(iNet[0]).compile())
+        return await new SolDefaultContractGenerator(iNet[0]).compile();
+      })
+    });
+
   });
 
   describe('Parse and compile Pizza Case', () => {

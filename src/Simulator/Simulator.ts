@@ -68,7 +68,7 @@ export class Simulator implements ISimulator {
           const cond = this.getCondition(transition)
           if (cond) {
             if (!this.conditions.has(transition.id)) {
-              transition.label.guards.clear();
+              transition.label.guard?.conditions.clear();
               this.conditions.set(transition.id, 2 ** this.conditions.size);     
             }
             const condID = this.conditions.get(transition.id)!;
@@ -76,9 +76,9 @@ export class Simulator implements ISimulator {
             const lastEvent = trace.events[trace.events.length - 1];
             if (lastEvent) {
               if (lastEvent.dataChange) {
-                lastEvent.dataChange.push(new InstanceDataChange(`conditions`, condID));
+                lastEvent.dataChange.push(new InstanceDataChange(cond, condID));
               } else {
-                lastEvent.dataChange = [new InstanceDataChange(`conditions`, condID)];
+                lastEvent.dataChange = [new InstanceDataChange(cond, condID)];
               }
             } else {
               trace.events.push(
@@ -93,10 +93,8 @@ export class Simulator implements ISimulator {
             }
 
             const guard = new Guard(`conditions[${condID}] == true`)
-            guard.condition = `conditions & ${condID} == ${condID}`;
-            guard.language = "Solidity";
-            //transition.label.guards.clear();
-            transition.label.guards.set(guard.name, guard);
+            guard.conditions.set("", `conditions & ${condID} == ${condID}`);
+            transition.label.guard = guard;
           }
           if (transition.label instanceof TaskLabel) {      
             trace.events.push(new Event(
@@ -118,13 +116,8 @@ export class Simulator implements ISimulator {
     }
 
     private getCondition(transition: Transition) {
-      if (transition.label.guards.size > 0) {
-        const conditions = [];
-        for (const guard of transition.label.guards.values()) {
-          if (guard.condition && !guard.default) conditions.push(guard.condition);
-        }
-        if (conditions.length > 0) return conditions.join(" && ");
-      }
+      if (transition.label.guard && transition.label.guard.conditions.size > 0) 
+        return [...transition.label.guard.conditions.values()].join(" && ");
     }
   }
 
