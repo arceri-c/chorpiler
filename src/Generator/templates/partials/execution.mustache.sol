@@ -8,21 +8,21 @@ uint _tokenState = tokenState[{{id}}];
 while(_tokenState != 0) {
   {{#states}}
   if (_tokenState & {{{consume}}} == {{{consume}}}) {
-  {{#transitions}} 
+    {{#transitions}} 
     {{#isDecision}}
-    {{^last}}
+    {{^elseBranch}}
     if ({{{decision}}}) {
-    {{/last}}
-    {{#last}}
+    {{/elseBranch}}
+    {{#elseBranch}}
     else {
-    {{/last}}
+    {{/elseBranch}}
       {{> transition }}
     }
     {{/isDecision}}
     {{^isDecision}}
     {{> transition }}
     {{/isDecision}}
-  {{/transitions}}
+    {{/transitions}}
   }
   {{/states}}
   break;
