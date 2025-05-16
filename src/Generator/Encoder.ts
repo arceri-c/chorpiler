@@ -157,7 +157,6 @@ export class INetEncoder {
     transitionMarkings.set(iNet.end.id, 0);
 
     for (const element of transitions) {
-      console.log(element)
       // build condition for transition
       const condition = element.label.guard ? this.buildCondition(element.label.guard) : undefined;
       const defaultBranch = element.label.guard ? element.label.guard.default : undefined;
@@ -245,10 +244,8 @@ export class INetEncoder {
     if (!(element instanceof Place)) return;
 
     if (this.isSilentTransition(prevElement)) {
-      console.log(prevElement)
       this.mergeSourceIntoTarget(iNet, prevElement, nextElement);
       this.deleteElement(iNet, element);
-      console.log(nextElement)
       return true;
     } else if (this.isSilentTransition(nextElement)) {
       this.mergeTargetIntoSource(iNet, prevElement, nextElement);
