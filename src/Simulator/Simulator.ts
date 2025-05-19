@@ -140,7 +140,7 @@ export class Simulator implements ISimulator {
         //console.log("Updated candidates:", candidates.map((t) => t.id));
       }
 
-      log.traces.push(currentTrace); // Add the last trace to the log
+      
 
       // Remove duplicate traces from the log
       log.traces = log.traces.filter((trace, index, self) =>
