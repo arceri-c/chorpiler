@@ -15,19 +15,19 @@
       <string key="concept:name" value="Get problem description"/>
       <string key="id" value="ChoreographyTask_1y1xlzg"/>
       <string key="sourceRef" value="Participant_18ejhc5"/>
-      <boolean key="resolved==true" value="4"/>
+      <boolean key="conditions" value="4"/>
     </event>
     <event>
       <string key="concept:name" value="Ask 1st level support"/>
       <string key="id" value="ChoreographyTask_0z1rm3g"/>
       <string key="sourceRef" value="Participant_18ejhc5"/>
-      <boolean key="resolved==true" value="2"/>
+      <boolean key="conditions" value="2"/>
     </event>
     <event>
       <string key="concept:name" value="Ask 2nd level support"/>
       <string key="id" value="ChoreographyTask_1qslyew"/>
       <string key="sourceRef" value="Participant_1yfcq7e"/>
-      <boolean key="resolved==true" value="1"/>
+      <boolean key="conditions" value="1"/>
     </event>
     <event>
       <string key="concept:name" value="Ask developer"/>
@@ -65,19 +65,19 @@
       <string key="concept:name" value="Get problem description"/>
       <string key="id" value="ChoreographyTask_1y1xlzg"/>
       <string key="sourceRef" value="Participant_18ejhc5"/>
-      <boolean key="resolved==true" value="4"/>
+      <boolean key="conditions" value="4"/>
     </event>
     <event>
       <string key="concept:name" value="Ask 1st level support"/>
       <string key="id" value="ChoreographyTask_0z1rm3g"/>
       <string key="sourceRef" value="Participant_18ejhc5"/>
-      <boolean key="resolved==true" value="2"/>
+      <boolean key="conditions" value="2"/>
     </event>
     <event>
       <string key="concept:name" value="Ask 2nd level support"/>
       <string key="id" value="ChoreographyTask_1qslyew"/>
       <string key="sourceRef" value="Participant_1yfcq7e"/>
-      <boolean key="resolved==true" value="1"/>
+      <boolean key="conditions" value="1"/>
     </event>
     <event>
       <string key="concept:name" value="Provide feedback"/>
@@ -105,13 +105,13 @@
       <string key="concept:name" value="Get problem description"/>
       <string key="id" value="ChoreographyTask_1y1xlzg"/>
       <string key="sourceRef" value="Participant_18ejhc5"/>
-      <boolean key="resolved==true" value="4"/>
+      <boolean key="conditions" value="4"/>
     </event>
     <event>
       <string key="concept:name" value="Ask 1st level support"/>
       <string key="id" value="ChoreographyTask_0z1rm3g"/>
       <string key="sourceRef" value="Participant_18ejhc5"/>
-      <boolean key="resolved==true" value="2"/>
+      <boolean key="conditions" value="2"/>
     </event>
     <event>
       <string key="concept:name" value="Provide feedback"/>
@@ -134,7 +134,7 @@
       <string key="concept:name" value="Get problem description"/>
       <string key="id" value="ChoreographyTask_1y1xlzg"/>
       <string key="sourceRef" value="Participant_18ejhc5"/>
-      <boolean key="resolved==true" value="4"/>
+      <boolean key="conditions" value="4"/>
     </event>
     <event>
       <string key="concept:name" value="Explain solution"/>

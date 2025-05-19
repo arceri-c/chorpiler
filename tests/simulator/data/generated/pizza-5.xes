@@ -10,9 +10,9 @@
       <string key="concept:name" value="Order Pizza"/>
       <string key="id" value="ChoreographyTask_0hy9n0g"/>
       <string key="sourceRef" value="Participant_06qakjv"/>
-      <boolean key="items==true" value="1"/>
-      <boolean key="items > 1" value="2"/>
-      <boolean key="items==fl" value="4"/>
+      <boolean key="conditions" value="1"/>
+      <boolean key="conditions" value="2"/>
+      <boolean key="conditions" value="4"/>
     </event>
     <event>
       <string key="concept:name" value="Deliver Pizza"/>
@@ -25,9 +25,9 @@
       <string key="concept:name" value="Order Pizza"/>
       <string key="id" value="ChoreographyTask_0hy9n0g"/>
       <string key="sourceRef" value="Participant_06qakjv"/>
-      <boolean key="items==true" value="1"/>
-      <boolean key="items > 1" value="2"/>
-      <boolean key="items==fl" value="4"/>
+      <boolean key="conditions" value="1"/>
+      <boolean key="conditions" value="2"/>
+      <boolean key="conditions" value="4"/>
     </event>
     <event>
       <string key="concept:name" value="Announce Delivery"/>
@@ -45,9 +45,9 @@
       <string key="concept:name" value="Order Pizza"/>
       <string key="id" value="ChoreographyTask_0hy9n0g"/>
       <string key="sourceRef" value="Participant_06qakjv"/>
-      <boolean key="items==true" value="1"/>
-      <boolean key="items > 1" value="2"/>
-      <boolean key="items==fl" value="4"/>
+      <boolean key="conditions" value="1"/>
+      <boolean key="conditions" value="2"/>
+      <boolean key="conditions" value="4"/>
     </event>
     <event>
       <string key="concept:name" value="Deliver Pizza"/>
@@ -60,9 +60,9 @@
       <string key="concept:name" value="Order Pizza"/>
       <string key="id" value="ChoreographyTask_0hy9n0g"/>
       <string key="sourceRef" value="Participant_06qakjv"/>
-      <boolean key="items==true" value="1"/>
-      <boolean key="items > 1" value="2"/>
-      <boolean key="items==fl" value="4"/>
+      <boolean key="conditions" value="1"/>
+      <boolean key="conditions" value="2"/>
+      <boolean key="conditions" value="4"/>
     </event>
     <event>
       <string key="concept:name" value="New Activity"/>

@@ -76,9 +76,9 @@ export class Simulator implements ISimulator {
             const lastEvent = trace.events[trace.events.length - 1];
             if (lastEvent) {
               if (lastEvent.dataChange) {
-                lastEvent.dataChange.push(new InstanceDataChange(cond, condID));
+                lastEvent.dataChange.push(new InstanceDataChange(`conditions`, condID));
               } else {
-                lastEvent.dataChange = [new InstanceDataChange(cond, condID)];
+                lastEvent.dataChange = [new InstanceDataChange(`conditions`, condID)];
               }
             } else {
               trace.events.push(
