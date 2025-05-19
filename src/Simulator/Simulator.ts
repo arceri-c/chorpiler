@@ -80,8 +80,8 @@ export class Simulator implements ISimulator {
           t.source.every((p) => enabled.includes(p))
         );
         if (executableCandidates.length === 0) {
-          //console.error("Deadlock detected: No executable transitions.");
-          throw new Error("Deadlock detected: No executable transitions.");
+          console.error("Deadlock detected: No executable transitions.");
+          return;
         }
 
         // Prioritize transitions that are both in toExecute and candidates
@@ -173,7 +173,7 @@ export class Simulator implements ISimulator {
         const lastEvent = currentTrace.events.at(-1);
         if (lastEvent) {
           lastEvent.dataChange = lastEvent.dataChange || [];
-          lastEvent.dataChange.push(new InstanceDataChange(condition, conditionID));
+          lastEvent.dataChange.push(new InstanceDataChange("conditions", conditionID));
         } else {
           currentTrace.events.push(
             new Event(
