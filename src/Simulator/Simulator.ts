@@ -57,7 +57,8 @@ export class Simulator implements ISimulator {
       const enabled: Place[] = [initial]; // Start with the initial place
       const candidates: Transition[] = [...initial.target]; // Initial candidates are the transitions from the initial place
       const executed: Transition[] = [];
-      const toExecute: Transition[] = [...this.contractGenerator.iNet.elements.values()].filter((t) => t instanceof Transition);
+      const toExecute: Transition[] = [...this.contractGenerator.iNet.elements.values()]
+        .filter((t): t is Transition => t instanceof Transition);
       const maxLogEntries = 100; // Threshold for maximum log entries
       const log = new EventLog([]); // Initialize the log variable
       let currentTrace = new Trace([]);
