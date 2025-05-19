@@ -57,12 +57,12 @@ export class Simulator implements ISimulator {
       const enabled: Place[] = [initial]; // Start with the initial place
       const candidates: Transition[] = [...initial.target]; // Initial candidates are the transitions from the initial place
       const executed: Transition[] = [];
-      const toExecute: Transition[] = [...this.contractGenerator.iNet.elements.values()].filter(
-        (t) => t instanceof Transition && t.label instanceof TaskLabel
-      ) as Transition[]; // All transitions with TaskLabel
+      const toExecute: Transition[] = [...this.contractGenerator.iNet.elements.values()].filter((t) => t instanceof Transition);
       const maxLogEntries = 100; // Threshold for maximum log entries
       const log = new EventLog([]); // Initialize the log variable
       let currentTrace = new Trace([]);
+
+      //console.log("To Execute", toExecute.map((t) => t.id))
 
       //console.log("Starting replay...");
       //console.log(`Initial place: ${initial.id}, End place: ${end.id}`);
@@ -90,10 +90,27 @@ export class Simulator implements ISimulator {
 
         // Pick a random candidate
         const transitionCandidate = availableCandidates[Math.floor(Math.random() * availableCandidates.length)];
-        //console.log("Selected transition candidate:", transitionCandidate.id);
+        ////console.log("Selected transition candidate:", transitionCandidate.id);
 
         // Process the transition
-        this.processTransition(transitionCandidate, enabled, candidates, executed, currentTrace);
+        this.processTransition(transitionCandidate, currentTrace);
+
+        // Update enabled places
+        transitionCandidate.source.forEach((p) => {
+          const index = enabled.indexOf(p);
+          if (index !== -1) enabled.splice(index, 1); // Remove source places from enabled
+        });
+
+        transitionCandidate.target.forEach((p) => {
+          if (!enabled.includes(p)) enabled.push(p); // Add target places to enabled
+        });
+    
+        // Update candidates and executed lists
+        candidates.splice(candidates.indexOf(transitionCandidate), 1); // Remove from candidates
+        executed.push(transitionCandidate); // Add to executed
+      
+        //console.log("Enabled places after execution:", enabled.map((p) => p.id));
+        //console.log("Executed transitions:", executed.map((t) => t.id));
 
         // Check if the end place is reached
         if (transitionCandidate.target.includes(end)) {
@@ -122,6 +139,8 @@ export class Simulator implements ISimulator {
         //console.log("Updated candidates:", candidates.map((t) => t.id));
       }
 
+      log.traces.push(currentTrace); // Add the last trace to the log
+
       // Remove duplicate traces from the log
       log.traces = log.traces.filter((trace, index, self) =>
         index === self.findIndex((t) =>
@@ -141,11 +160,8 @@ export class Simulator implements ISimulator {
 
     private processTransition(
       transitionCandidate: Transition,
-      enabled: Place[],
-      candidates: Transition[],
-      executed: Transition[],
       currentTrace: Trace
-    ): void {
+    ) {
       //console.log("Executing transition:", transitionCandidate.id);
     
       // Add the transition to the trace if it has a TaskLabel
@@ -191,22 +207,6 @@ export class Simulator implements ISimulator {
         guard.conditions.set("", `conditions & ${conditionID} == ${conditionID}`);
         transitionCandidate.label.guard = guard;
       }
-    
-      // Update enabled places
-      transitionCandidate.source.forEach((p) => {
-        const index = enabled.indexOf(p);
-        if (index !== -1) enabled.splice(index, 1); // Remove source places from enabled
-      });
-      transitionCandidate.target.forEach((p) => {
-        if (!enabled.includes(p)) enabled.push(p); // Add target places to enabled
-      });
-    
-      // Update candidates and executed lists
-      candidates.splice(candidates.indexOf(transitionCandidate), 1); // Remove from candidates
-      executed.push(transitionCandidate); // Add to executed
-    
-      //console.log("Enabled places after execution:", enabled.map((p) => p.id));
-      //console.log("Executed transitions:", executed.map((t) => t.id));
     }
   }
 
