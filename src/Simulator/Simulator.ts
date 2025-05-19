@@ -48,76 +48,165 @@ export class Simulator implements ISimulator {
     }
 
     generateLog() {
-      this.replay(this.contractGenerator.iNet.initial!, [], new Trace([]))
+      this.replay()
     }
 
-    replay(current: Place, visited: string[], trace: Trace) {
-      if (current.type === PlaceType.End) {
-        this.visited.push([...visited]); // reached end, deep copy
-        this.traces.push(new Trace([...trace.events])); // reached end, deep copy
-        return;
-      }
+    replay() {
+      const initial = this.contractGenerator.iNet.initial!;
+      const end = this.contractGenerator.iNet.end!;
+      const enabled: Place[] = [initial]; // Start with the initial place
+      const candidates: Transition[] = [...initial.target]; // Initial candidates are the transitions from the initial place
+      const executed: Transition[] = [];
+      const toExecute: Transition[] = [...this.contractGenerator.iNet.elements.values()].filter(
+        (t) => t instanceof Transition && t.label instanceof TaskLabel
+      ) as Transition[]; // All transitions with TaskLabel
+      const maxLogEntries = 100; // Threshold for maximum log entries
+      const log = new EventLog([]); // Initialize the log variable
+      let currentTrace = new Trace([]);
 
-      for (const transition of current.target) {
-        // Check if transition is enabled
-        if (transition.source.every(p => visited.includes(p.id) || p.id === current.id)) {
-          const traceSizeBefore = trace.events.length;
+      //console.log("Starting replay...");
+      //console.log(`Initial place: ${initial.id}, End place: ${end.id}`);
+      //console.log("Initial candidates:", candidates.map((t) => t.id));
 
-          // Fire transition
-          visited.push(transition.id);
-          const cond = this.getCondition(transition)
-          if (cond) {
-            if (!this.conditions.has(transition.id)) {
-              transition.label.guard?.conditions.clear();
-              this.conditions.set(transition.id, 2 ** this.conditions.size);     
-            }
-            const condID = this.conditions.get(transition.id)!;
-            // Add instance data change
-            const lastEvent = trace.events[trace.events.length - 1];
-            if (lastEvent) {
-              if (lastEvent.dataChange) {
-                lastEvent.dataChange.push(new InstanceDataChange(`conditions`, condID));
-              } else {
-                lastEvent.dataChange = [new InstanceDataChange(`conditions`, condID)];
-              }
-            } else {
-              trace.events.push(
-              new Event(
-                "Instance Data Change",
-                "Instance Data Change",
-                [...this.contractGenerator.iNet.participants.values()].at(0)!.id,
-                "",
-                [new InstanceDataChange(`conditions`, condID)]
-              )
-              );
-            }
-
-            const guard = new Guard(`conditions[${condID}] == true`)
-            guard.conditions.set("", `conditions & ${condID} == ${condID}`);
-            transition.label.guard = guard;
-          }
-          if (transition.label instanceof TaskLabel) {      
-            trace.events.push(new Event(
-              transition.label.name,
-              transition.label.modelID,
-              transition.label.sender.id
-            ));
-          }
-          for (const nextPlace of transition.target) {
-            this.replay(nextPlace, visited, trace);
-          }
-
-          visited.pop(); // backtrack (XOR fork)
-          if (traceSizeBefore < trace.events.length) {  
-            trace.events.pop()
-          }
+      while (log.traces.length < maxLogEntries) {
+        // Stop if all transitions in toExecute are executed
+        if (toExecute.every((t) => executed.includes(t))) {
+          //console.log("All transitions executed. Stopping replay.");
+          break;
         }
+
+        // Check for execution candidates
+        const executableCandidates = candidates.filter((t) =>
+          t.source.every((p) => enabled.includes(p))
+        );
+        if (executableCandidates.length === 0) {
+          //console.error("Deadlock detected: No executable transitions.");
+          throw new Error("Deadlock detected: No executable transitions.");
+        }
+
+        // Prioritize transitions that are both in toExecute and candidates
+        const prioritizedCandidates = executableCandidates.filter((t) => toExecute.includes(t));
+        const availableCandidates = prioritizedCandidates.length > 0 ? prioritizedCandidates : executableCandidates;
+
+        // Pick a random candidate
+        const transitionCandidate = availableCandidates[Math.floor(Math.random() * availableCandidates.length)];
+        //console.log("Selected transition candidate:", transitionCandidate.id);
+
+        // Process the transition
+        this.processTransition(transitionCandidate, enabled, candidates, executed, currentTrace);
+
+        // Check if the end place is reached
+        if (transitionCandidate.target.includes(end)) {
+          //console.log("End place reached. Flushing trace to log.");
+          log.traces.push(currentTrace); // Add the trace to the log
+          //console.log("Trace added to log:", currentTrace.events.map((e) => e.name));
+
+          // Reset state for the next trace
+          enabled.length = 0;
+          enabled.push(initial); // Start again with the initial place
+          candidates.length = 0;
+          candidates.push(...initial.target); // Start again with initial candidates
+          executed.length = 0;
+          currentTrace = new Trace([]);
+          //console.log("State reset for the next trace.");
+          continue;
+        }
+
+        // Add new transitions to candidates
+        transitionCandidate.target.forEach((p) => {
+          p.target.forEach((t) => {
+            if (!candidates.includes(t)) candidates.push(t);
+          });
+        });
+
+        //console.log("Updated candidates:", candidates.map((t) => t.id));
       }
+
+      // Remove duplicate traces from the log
+      log.traces = log.traces.filter((trace, index, self) =>
+        index === self.findIndex((t) =>
+          t.events.map((e) => e.name).join(",") === trace.events.map((e) => e.name).join(",")
+        )
+      );
+
+      // Output the log
+      //console.log("Generated log:", log.traces.map((trace) => trace.events.map((e) => e.name)));
+      this.traces = log.traces;
     }
 
     private getCondition(transition: Transition) {
       if (transition.label.guard && transition.label.guard.conditions.size > 0) 
         return [...transition.label.guard.conditions.values()].join(" && ");
+    }
+
+    private processTransition(
+      transitionCandidate: Transition,
+      enabled: Place[],
+      candidates: Transition[],
+      executed: Transition[],
+      currentTrace: Trace
+    ): void {
+      //console.log("Executing transition:", transitionCandidate.id);
+    
+      // Add the transition to the trace if it has a TaskLabel
+      if (transitionCandidate.label instanceof TaskLabel) {
+        currentTrace.events.push(
+          new Event(
+            transitionCandidate.label.name,
+            transitionCandidate.id,
+            transitionCandidate.label.sender.id
+          )
+        );
+      }
+    
+      // Handle conditions for the transition
+      const condition = this.getCondition(transitionCandidate);
+      if (condition) {
+        if (!this.conditions.has(transitionCandidate.id)) {
+          transitionCandidate.label.guard?.conditions.clear();
+          this.conditions.set(transitionCandidate.id, 1 << this.conditions.size);
+        }
+    
+        const conditionID = this.conditions.get(transitionCandidate.id)!;
+    
+        // Add instance data change to the last event or create a new event
+        const lastEvent = currentTrace.events.at(-1);
+        if (lastEvent) {
+          lastEvent.dataChange = lastEvent.dataChange || [];
+          lastEvent.dataChange.push(new InstanceDataChange(condition, conditionID));
+        } else {
+          currentTrace.events.push(
+            new Event(
+              "Instance Data Change",
+              "Instance Data Change",
+              [...this.contractGenerator.iNet.participants.values()][0]!.id,
+              "",
+              [new InstanceDataChange("conditions", conditionID)]
+            )
+          );
+        }
+    
+        // Update the guard for the transition
+        const guard = new Guard(`conditions[${conditionID}] == true`);
+        guard.conditions.set("", `conditions & ${conditionID} == ${conditionID}`);
+        transitionCandidate.label.guard = guard;
+      }
+    
+      // Update enabled places
+      transitionCandidate.source.forEach((p) => {
+        const index = enabled.indexOf(p);
+        if (index !== -1) enabled.splice(index, 1); // Remove source places from enabled
+      });
+      transitionCandidate.target.forEach((p) => {
+        if (!enabled.includes(p)) enabled.push(p); // Add target places to enabled
+      });
+    
+      // Update candidates and executed lists
+      candidates.splice(candidates.indexOf(transitionCandidate), 1); // Remove from candidates
+      executed.push(transitionCandidate); // Add to executed
+    
+      //console.log("Enabled places after execution:", enabled.map((p) => p.id));
+      //console.log("Executed transitions:", executed.map((t) => t.id));
     }
   }
 
