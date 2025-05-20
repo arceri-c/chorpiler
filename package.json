@@ -1,6 +1,6 @@
 {
   "name": "chorpiler",
-  "version": "0.2.0-alpha.16",
+  "version": "0.2.0-alpha.20",
   "description": "",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -11,7 +11,7 @@
     "test": "mocha tests/index.test.ts && mocha tests/compiler && npx hardhat compile && mocha tests/output",
     "dev": "mocha tests/compiler -g 'Incident Management' && npx hardhat compile && mocha tests/output -g 'Incident Management'",
     "dev2": "mocha tests/output/simulator --inspect",
-    "debug": "mocha tests/compiler -g 'skips' --inspect",
+    "debug": "mocha tests/simulator --inspect",
     "test/compiler": "mocha tests/compiler",
     "test/output": "mocha tests/output",
     "test/sim": "mocha tests/simulator",

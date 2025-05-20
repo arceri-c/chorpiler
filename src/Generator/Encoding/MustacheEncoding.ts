@@ -79,7 +79,7 @@ export class MustacheEncoding extends MustacheProcessEncoding implements IFromEn
     const main = MustacheProcessEncoding.fromEncoding(encoding);
     const subProcesses = Array.from(encoding.subProcesses.values()).map(MustacheProcessEncoding.fromEncoding);
 
-    console.log(encoding.states);
+    //console.log(encoding.states);
 
     return new MustacheEncoding(
       subProcesses, 
