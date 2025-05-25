@@ -211,7 +211,7 @@ export class Simulator implements ISimulator {
     }
   }
 
-  async generate(): Promise<void> {
+  async generate(prePend = ""): Promise<void> {
     const bpmnFiles = fs.readdirSync(this.bpmnDir).filter(file => file.endsWith('.bpmn'));
 
     for (const file of bpmnFiles) {
@@ -220,7 +220,7 @@ export class Simulator implements ISimulator {
       const model = fs.readFileSync(filePath);
       const nets = await this.bpmnParser!.fromXML(model);
       const iNet = nets[0]; // only support one model
-
+      iNet.id = prePend + iNet.id;
       const generator = new SolDefaultContractGenerator(iNet);
       generator.addCaseVariable(new CaseVariable("conditions", "uint", "uint public conditions;", true));
       const sim = new Simulator.Simulation(generator);

@@ -10,7 +10,16 @@
       <string key="concept:name" value="Order Pizza"/>
       <string key="id" value="ChoreographyTask_0hy9n0g"/>
       <string key="sourceRef" value="Participant_06qakjv"/>
-      <boolean key="conditions" value="1"/>
+    </event>
+    <event>
+      <string key="concept:name" value="Confirm ETA"/>
+      <string key="id" value="ChoreographyTask_1b2vkz9"/>
+      <string key="sourceRef" value="Participant_0mgz9si"/>
+    </event>
+    <event>
+      <string key="concept:name" value="Announce Delivery"/>
+      <string key="id" value="ChoreographyTask_1jrfmx8"/>
+      <string key="sourceRef" value="Participant_0mgz9si"/>
     </event>
     <event>
       <string key="concept:name" value="Deliver Pizza"/>
@@ -23,16 +32,7 @@
       <string key="concept:name" value="Order Pizza"/>
       <string key="id" value="ChoreographyTask_0hy9n0g"/>
       <string key="sourceRef" value="Participant_06qakjv"/>
-    </event>
-    <event>
-      <string key="concept:name" value="Confirm ETA"/>
-      <string key="id" value="ChoreographyTask_1b2vkz9"/>
-      <string key="sourceRef" value="Participant_0mgz9si"/>
-    </event>
-    <event>
-      <string key="concept:name" value="Announce Delivery"/>
-      <string key="id" value="ChoreographyTask_1jrfmx8"/>
-      <string key="sourceRef" value="Participant_0mgz9si"/>
+      <boolean key="conditions" value="1"/>
     </event>
     <event>
       <string key="concept:name" value="Deliver Pizza"/>

@@ -5,7 +5,7 @@ describe('Simulate...', () => {
   const sim = new Simulator(__dirname);
 
   before(() => {
-    return sim.generate();
+    return sim.generate("test_");
   })
 
   it("", () => {})

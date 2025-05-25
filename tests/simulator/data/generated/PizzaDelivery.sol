@@ -1,7 +1,7 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
 
-contract PizzaDelivery {
+contract test_PizzaDelivery {
   uint public tokenState = 1;
   address[3] public participants;
   uint public conditions;
