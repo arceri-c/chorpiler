@@ -16,6 +16,7 @@ import encodingIM from '../data/generated/incident-management/IM_ProcessExecutio
 import encodingPH from '../data/generated/out-of-order/PH_ProcessExecution_encoding.json';
 import encodingPIZZA from '../data/generated/pizza/PIZZA_ProcessExecution_encoding.json';
 import encodingRA from '../data/generated/rental-agreement/RA_ProcessExecution_encoding.json';
+import { capitalize } from "../../src/util/helpers";
 
 const NR_NON_CONFORMING_TRACES = 0;
 const parser = new XESFastXMLParser();
@@ -128,7 +129,10 @@ const testCase = (
           // data changes
           if (event.dataChange) {
             for (const el of event.dataChange) {
-              const tx = await (await contract["set" + el.variable](el.val)).wait(1);
+              const methodName = "set" + capitalize(el.variable);
+              console.log("---------------------------------")
+              console.log(methodName)
+              const tx = await (await contract["" + methodName](el.val)).wait(1);
               console.debug('Gas', 'Write', event.name, el.variable, el.val, ":", tx.gasUsed);
               totalGasCost += tx.gasUsed;
             }
@@ -171,7 +175,10 @@ const testCase = (
           // data changes
           if (event.dataChange) {
             for (const el of event.dataChange) {
-              const tx = await (await contract["set" + el.variable](el.val)).wait(1);
+              const methodName = "set" + capitalize(el.variable);
+              console.log("---------------------------------")
+              console.log(methodName)
+              const tx = await (await contract["" + methodName](el.val)).wait(1);
             }
           }
         }

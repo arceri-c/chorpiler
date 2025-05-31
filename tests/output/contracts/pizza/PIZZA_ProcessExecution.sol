@@ -9,7 +9,7 @@ contract PIZZA_ProcessExecution {
   constructor(address[3] memory _participants) {
     participants = _participants;
   }
-  function setitems(bool _items) external {
+  function setItems(bool _items) external {
     items = _items;
   }
 

@@ -9,7 +9,7 @@ contract IM_ProcessExecution {
   constructor(address[5] memory _participants) {
     participants = _participants;
   }
-  function setresolved(bool _resolved) external {
+  function setResolved(bool _resolved) external {
     resolved = _resolved;
   }
 

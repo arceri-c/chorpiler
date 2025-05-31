@@ -27,8 +27,7 @@ export interface RA_ProcessExecutionInterface extends Interface {
       | "bond"
       | "enact"
       | "participants"
-      | "setbond"
-      | "setweeklyRent"
+      | "setWeeklyRent"
       | "tokenState"
       | "weeklyRent"
   ): FunctionFragment;
@@ -44,11 +43,7 @@ export interface RA_ProcessExecutionInterface extends Interface {
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
-    functionFragment: "setbond",
-    values: [BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "setweeklyRent",
+    functionFragment: "setWeeklyRent",
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
@@ -70,9 +65,8 @@ export interface RA_ProcessExecutionInterface extends Interface {
     functionFragment: "participants",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "setbond", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: "setweeklyRent",
+    functionFragment: "setWeeklyRent",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "tokenState", data: BytesLike): Result;
@@ -134,9 +128,7 @@ export interface RA_ProcessExecution extends BaseContract {
 
   participants: TypedContractMethod<[arg0: BigNumberish], [string], "view">;
 
-  setbond: TypedContractMethod<[_bond: BigNumberish], [void], "nonpayable">;
-
-  setweeklyRent: TypedContractMethod<
+  setWeeklyRent: TypedContractMethod<
     [_weeklyRent: BigNumberish],
     [void],
     "nonpayable"
@@ -163,10 +155,7 @@ export interface RA_ProcessExecution extends BaseContract {
     nameOrSignature: "participants"
   ): TypedContractMethod<[arg0: BigNumberish], [string], "view">;
   getFunction(
-    nameOrSignature: "setbond"
-  ): TypedContractMethod<[_bond: BigNumberish], [void], "nonpayable">;
-  getFunction(
-    nameOrSignature: "setweeklyRent"
+    nameOrSignature: "setWeeklyRent"
   ): TypedContractMethod<[_weeklyRent: BigNumberish], [void], "nonpayable">;
   getFunction(
     nameOrSignature: "tokenState"

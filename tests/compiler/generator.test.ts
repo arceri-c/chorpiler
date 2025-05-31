@@ -237,7 +237,7 @@ describe('Test Parsing and Generation', () => {
       const data = await readFile(path.join(BPMN_PATH, '/cases/incident-management/incident-management.bpmn'));
 
       const contract = new SolDefaultContractGenerator((await parser.fromXML(data))[0]);
-      contract.addCaseVariable(new CaseVariable("resolved", "bool", "bool public resolved = false;", false));
+      contract.addCaseVariable(new CaseVariable("resolved", "bool", "bool public resolved = false;", true));
 
       return compileCase(
         contract,

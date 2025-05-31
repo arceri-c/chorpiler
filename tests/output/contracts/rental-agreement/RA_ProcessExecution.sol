@@ -10,10 +10,7 @@ contract RA_ProcessExecution {
   constructor(address[3] memory _participants) {
     participants = _participants;
   }
-  function setbond(int _bond) external {
-    bond = _bond;
-  }
-  function setweeklyRent(int _weeklyRent) external {
+  function setWeeklyRent(int _weeklyRent) external {
     weeklyRent = _weeklyRent;
   }
 

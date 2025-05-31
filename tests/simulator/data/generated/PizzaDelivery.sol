@@ -9,7 +9,7 @@ contract test_PizzaDelivery {
   constructor(address[3] memory _participants) {
     participants = _participants;
   }
-  function setconditions(uint _conditions) external {
+  function setConditions(uint _conditions) external {
     conditions = _conditions;
   }
 

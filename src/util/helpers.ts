@@ -8,6 +8,10 @@ export const deleteFromArray = (array: Array<any>, key: any) => {
   }
 }
 
+export const capitalize = (name: string): string => {
+  return name.charAt(0).toUpperCase() + name.slice(1);
+}
+
 export const printInet = (iNet: InteractionNet): void => {
   console.log(`Interaction Net: ${iNet.id}`);
   if (!iNet.initial) {

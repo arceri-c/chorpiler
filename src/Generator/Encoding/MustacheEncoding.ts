@@ -1,13 +1,14 @@
 import { assert } from "console";
 import * as Encoding from "./Encoding";
 import { IFromEncoding } from "./IFromEncoding";
+import { capitalize } from "../../util/helpers";
 
 class MustacheProcessEncoding {
   constructor(
     public id: string, // ID in form 0...n assigned by generator
     public modelID: string, // ID as was found in model
     public participants: Participant[],
-    public caseVariables: Encoding.CaseVariable[],
+    public caseVariables: CaseVariable[],
     public states: State[],
   ) {}
 
@@ -24,7 +25,7 @@ class MustacheProcessEncoding {
       encoding.id.toString(),
       encoding.modelID,
       Array.from(encoding.participants.values()).map(p => new Participant(p.id.toString(), p.modelID, p.name, p.address)),
-      Array.from(encoding.caseVariables.values()),
+      Array.from(encoding.caseVariables.values()).map(c => new CaseVariable(c.name, c.type, c.expression, c.setters)),
       MustacheProcessEncoding.convertStates(states),
     );
   }
@@ -152,4 +153,17 @@ class Participant {
     public name: string,
     public address: string
   ) {}
+}
+
+class CaseVariable {
+  constructor(
+    public name: string,
+    public type: string,
+    public expression: string,
+    public setters: boolean
+  ) {
+    this.functionName = "set" + capitalize(name);
+  }
+
+  public functionName: string;
 }

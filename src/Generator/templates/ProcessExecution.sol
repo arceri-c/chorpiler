@@ -17,9 +17,11 @@ contract {{{modelID}}} {
     participants = _participants;
   }
   {{#caseVariables}}
-  function set{{{name}}}({{{type}}} _{{{name}}}) external {
+  {{#setters}}
+  function {{{functionName}}}({{{type}}} _{{{name}}}) external {
     {{{name}}} = _{{{name}}};
   }
+  {{/setters}}
   {{/caseVariables}}
 
   function enact(uint id) external {

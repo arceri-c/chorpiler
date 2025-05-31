@@ -140,7 +140,6 @@ export class INetEncoder {
     const taskIDs = new Map<string, number>();
     const transitions = new Array<Transition>();
     const taskIDoffset = this.mainEncoded.loopProtection === true ? 1 : 0; // keep 0 for noop, noop is required for loop protection,
-    console.log(this.mainEncoded)
     // loop protection: set taskID to noop, once it is executed once, to prevent endless execution loops.
 
     for (const element of iNet.elements.values()) {
