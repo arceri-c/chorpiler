@@ -130,8 +130,6 @@ const testCase = (
           if (event.dataChange) {
             for (const el of event.dataChange) {
               const methodName = "set" + capitalize(el.variable);
-              console.log("---------------------------------")
-              console.log(methodName)
               const tx = await (await contract["" + methodName](el.val)).wait(1);
               console.debug('Gas', 'Write', event.name, el.variable, el.val, ":", tx.gasUsed);
               totalGasCost += tx.gasUsed;
@@ -176,8 +174,6 @@ const testCase = (
           if (event.dataChange) {
             for (const el of event.dataChange) {
               const methodName = "set" + capitalize(el.variable);
-              console.log("---------------------------------")
-              console.log(methodName)
               const tx = await (await contract["" + methodName](el.val)).wait(1);
             }
           }
