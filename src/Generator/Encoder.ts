@@ -14,15 +14,18 @@ export class INetEncoder {
   
   public generate(
     _iNet: InteractionNet, 
-    options: { unfoldSubNets: boolean } // If true,
-    // sub choreographies are "folded" into the main choreography, i.e.,
-    // they are treated as visual option only with no consequence for the generated contract
+    options: { 
+      unfoldSubNets: boolean, // If true, sub choreographies are "folded" into the main choreography, i.e.,
+      // they are treated as visual option only with no consequence for the generated contract
+      loopProtection: boolean
+    } 
   ) {
     const iNet: InteractionNet = {..._iNet}
     if (iNet.initial == null || iNet.end == null) {
       throw new Error("Invalid InteractionNet"); 
     }
     this.mainEncoded.modelID = iNet.id;
+    if (options.loopProtection) this.mainEncoded.loopProtection = options.loopProtection;
     // create participant template options and IDs
     [...iNet.participants.values()].forEach((par, encodedID) => {
       this.mainEncoded.participants.set(par.id, new Encoding.Participant(
@@ -36,7 +39,7 @@ export class INetEncoder {
     if (options.unfoldSubNets) {
       // sub choreographies are "folded" into the main choreography, i.e.,
       // they are treated as visual option only with no consequence for the generated contract
-      this.unfoldSubNets(iNet); // TODO: Recursively unfold all subnets
+      this.unfoldSubNets(iNet); // Recursively unfold all subnets
     }
 
     this.encodeNets(this.mainEncoded, iNet);
@@ -136,6 +139,9 @@ export class INetEncoder {
     // transitions to ids
     const taskIDs = new Map<string, number>();
     const transitions = new Array<Transition>();
+    const taskIDoffset = this.mainEncoded.loopProtection === true ? 1 : 0; // keep 0 for noop, noop is required for loop protection,
+    console.log(this.mainEncoded)
+    // loop protection: set taskID to noop, once it is executed once, to prevent endless execution loops.
 
     for (const element of iNet.elements.values()) {
       if (!(element instanceof Transition)) { // don't need extra IDs for other choreos
@@ -145,7 +151,7 @@ export class INetEncoder {
         throw new Error(`Unconnected transition in interaction net ${element.id}`);
       }
       if (!this.isSilentTransition(element)) {  // silent transitions don't need external IDs
-        taskIDs.set(element.id, taskIDs.size + 1); // keep 0 for noop
+        taskIDs.set(element.id, taskIDs.size + taskIDoffset); 
       }
       transitions.push(element);
     }

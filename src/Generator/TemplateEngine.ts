@@ -27,7 +27,7 @@ export abstract class TemplateEngine implements ITemplateEngine {
     private templatePartials = new Array<{ partial: string, path: string}>()
   ) { }
 
-  async compile(unfoldSubNets = false) {
+  async compile(unfoldSubNets = false, loopProtection = true) {
     if (this.iNet.initial == null || this.iNet.end == null) {
       throw new Error("Invalid InteractionNet"); 
     }
@@ -39,7 +39,7 @@ export abstract class TemplateEngine implements ITemplateEngine {
      }, {} );
 
     const encoder = new INetEncoder();
-    const gen = encoder.generate(iNet, { unfoldSubNets });
+    const gen = encoder.generate(iNet, { unfoldSubNets, loopProtection });
     gen.caseVariables = this.caseVariables;
 
     return { target: Mustache.render(template, MustacheEncoding.fromEncoding(gen), partials), 

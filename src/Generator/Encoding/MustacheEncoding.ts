@@ -11,6 +11,7 @@ class MustacheProcessEncoding {
     public states: State[],
   ) {}
 
+  loopProtection = true;
   hasStates = () => this.states.length > 0;
   numberOfParticipants = () => this.participants.length.toString();
 
@@ -77,6 +78,7 @@ export class MustacheEncoding extends MustacheProcessEncoding implements IFromEn
 
   static fromEncoding(encoding: Encoding.MainProcess): MustacheEncoding {
     const main = MustacheProcessEncoding.fromEncoding(encoding);
+    main.loopProtection = encoding.loopProtection;
     const subProcesses = Array.from(encoding.subProcesses.values()).map(MustacheProcessEncoding.fromEncoding);
 
     //console.log(encoding.states);

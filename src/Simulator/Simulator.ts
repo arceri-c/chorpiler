@@ -25,7 +25,7 @@ export class Simulator implements ISimulator {
     public bpmnParser: INetParser = new INetFastXMLParser(),
     public xesDir: string = path.join(workdir + "/data/generated"),
     public xesParser: IXESParser = new XESFastXMLParser(),
-    public contractDir: string = path.join(workdir + "/data/generated"),
+    public contractDir: string = path.join(workdir + "/data/generated")
   ) {}
 
   private static Simulation = class {
@@ -211,7 +211,7 @@ export class Simulator implements ISimulator {
     }
   }
 
-  async generate(prePend = ""): Promise<void> {
+  async generate(prePend = "", GeneratorType = SolDefaultContractGenerator): Promise<void> {
     const bpmnFiles = fs.readdirSync(this.bpmnDir).filter(file => file.endsWith('.bpmn'));
 
     for (const file of bpmnFiles) {
@@ -221,7 +221,7 @@ export class Simulator implements ISimulator {
       const nets = await this.bpmnParser!.fromXML(model);
       const iNet = nets[0]; // only support one model
       iNet.id = prePend + iNet.id;
-      const generator = new SolDefaultContractGenerator(iNet);
+      const generator = new GeneratorType(iNet);
       generator.addCaseVariable(new CaseVariable("conditions", "uint", "uint public conditions;", true));
       const sim = new Simulator.Simulation(generator);
       await sim.generate();
