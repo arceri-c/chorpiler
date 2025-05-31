@@ -36,14 +36,14 @@ export class Simulator implements ISimulator {
 
     constructor(public contractGenerator: TemplateEngine) {}
 
-    async generate() {
+    async generate(options: { unfoldSubNets: boolean, loopProtection: boolean }) {
       this.generateLog();
-      await this.generateContract();
+      await this.generateContract(options);
     }
 
-    async generateContract() {
+    async generateContract(options: { unfoldSubNets: boolean, loopProtection: boolean }) {
       if (this.traces.length === 0) return console.warn(`No trace generated for ${this.contractGenerator.iNet.id}`);
-      this.contract = await this.contractGenerator.compile();
+      this.contract = await this.contractGenerator.compile(options.unfoldSubNets, options.loopProtection);
       return this.contract;
     }
 
@@ -211,7 +211,9 @@ export class Simulator implements ISimulator {
     }
   }
 
-  async generate(prePend = "", GeneratorType = SolDefaultContractGenerator): Promise<void> {
+  async generate(prePend = "", 
+    GeneratorType = SolDefaultContractGenerator, 
+    generationOptions = { unfoldSubNets: true, loopProtection: true }): Promise<void> {
     const bpmnFiles = fs.readdirSync(this.bpmnDir).filter(file => file.endsWith('.bpmn'));
 
     for (const file of bpmnFiles) {
@@ -224,7 +226,7 @@ export class Simulator implements ISimulator {
       const generator = new GeneratorType(iNet);
       generator.addCaseVariable(new CaseVariable("conditions", "uint", "uint public conditions;", true));
       const sim = new Simulator.Simulation(generator);
-      await sim.generate();
+      await sim.generate(generationOptions);
 
       if (sim.traces.length === 0) continue;
 

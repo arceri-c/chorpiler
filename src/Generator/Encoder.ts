@@ -25,7 +25,7 @@ export class INetEncoder {
       throw new Error("Invalid InteractionNet"); 
     }
     this.mainEncoded.modelID = iNet.id;
-    if (options.loopProtection) this.mainEncoded.loopProtection = options.loopProtection;
+    this.mainEncoded.loopProtection = options.loopProtection;
     // create participant template options and IDs
     [...iNet.participants.values()].forEach((par, encodedID) => {
       this.mainEncoded.participants.set(par.id, new Encoding.Participant(
