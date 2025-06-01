@@ -77,6 +77,7 @@ export class MustacheEncoding extends MustacheProcessEncoding implements IFromEn
     ...args: ConstructorParameters<typeof MustacheProcessEncoding>
   ) {
     super(...args);
+    //console.log(JSON.stringify(this.states));
   }
 
   static fromEncoding(encoding: Encoding.MainProcess): MustacheEncoding {
@@ -132,14 +133,15 @@ class State {
     public last: boolean | null = null
   ) {
     const defaultBranches = this.transitions.filter(t => t.defaultBranch);
+    const decisions = this.transitions.filter(t => t.decision);
     assert(defaultBranches.length <= 1);
-    if (defaultBranches.length > 0) {
+    if (decisions.length > 0) {
       this.isDecision = true;
       this.transitions = [
         ...this.transitions.filter(t => !t.defaultBranch),
         ...defaultBranches,
       ];
-      if (transitions.length > 0) {
+      if (transitions.length > 0 && defaultBranches.length === 1) {
         assert(transitions[transitions.length - 1].defaultBranch, "The last transition must be the defaultBranch.");
       }
     }

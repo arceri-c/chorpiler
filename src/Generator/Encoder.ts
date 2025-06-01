@@ -308,18 +308,18 @@ export class INetEncoder {
     if (element.source.length !== 1 || element.target.length <= 1) return;
     if (!this.isSilentTransition(element)) return;
     assert(element instanceof Transition);
-    if (this.isSilentTransition(element) // rule i
-      && element.source.length === 1 && element.target.length > 1
+    if (element.source.length === 1 && element.target.length > 1
       && element.source[0].source.length > 0 && element.source[0].target.length > 1
       ) {
       if (loggingEnabled) console.log("Applied silent transition removal rule I");
       // XOR -> AND, XOR not immediately after start event (a manual task is present before the XOR)
-      const xorPlace = element.source[0];
-      const andPlaces = element.target;
+      const xorPlace = element.source[0]; // p0
+      assert(xorPlace instanceof Place);
+      const andPlaces = element.target; // p1, p2, ...
       for (const prevTransition of xorPlace.source) this.linkNewTargets(prevTransition, andPlaces);
       for (const andPlace of andPlaces) this.linkNewTargets(andPlace, xorPlace.target);
       this.deleteElement(iNet, element);
-      this.deleteElement(iNet, xorPlace); 
+      this.deleteElement(iNet, xorPlace);
       return true;
     }
     return false;

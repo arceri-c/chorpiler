@@ -11,6 +11,8 @@ import type * as rentalAgreement from "./rental-agreement";
 export type { rentalAgreement };
 import type * as supplyChain from "./supply-chain";
 export type { supplyChain };
+import type * as xorAnd from "./xor-and";
+export type { xorAnd };
 export * as factories from "./factories";
 export type { IM_ProcessExecution } from "./incident-management/IM_ProcessExecution";
 export { IM_ProcessExecution__factory } from "./factories/incident-management/IM_ProcessExecution__factory";
@@ -22,3 +24,5 @@ export type { RA_ProcessExecution } from "./rental-agreement/RA_ProcessExecution
 export { RA_ProcessExecution__factory } from "./factories/rental-agreement/RA_ProcessExecution__factory";
 export type { SC_ProcessExecution } from "./supply-chain/SC_ProcessExecution";
 export { SC_ProcessExecution__factory } from "./factories/supply-chain/SC_ProcessExecution__factory";
+export type { XA_ProcessExecution } from "./xor-and/XA_ProcessExecution";
+export { XA_ProcessExecution__factory } from "./factories/xor-and/XA_ProcessExecution__factory";
