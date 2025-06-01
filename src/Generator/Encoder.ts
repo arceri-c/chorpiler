@@ -8,7 +8,7 @@ import { InteractionNet } from '../Parser/InteractionNet';
 import * as Encoding from "./Encoding/Encoding";
 import { assert } from 'console';
 
-const loggingEnabled = true; // Toggleable logging
+const loggingEnabled = false; // Toggleable logging
 
 export class INetEncoder {
 
@@ -269,7 +269,7 @@ export class INetEncoder {
     if (!this.isSilentTransition(prevElement) || !this.isSilentTransition(nextElement)) return;
     if (!(element instanceof Place)) return;
 
-    if (prevElement.target.length > 1 && nextElement.source.length === 1) { // rule f.2
+    if (prevElement.target.length >= 1 && nextElement.source.length === 1) { // rule f.2
       if (loggingEnabled) console.log("Applied silent transition removal rule F.2");
       this.mergeTargetIntoSource(iNet, prevElement, nextElement);
       this.deleteElement(iNet, element);
@@ -293,7 +293,7 @@ export class INetEncoder {
       this.mergeTargetIntoSource(iNet, prevElement, nextElement);
       this.deleteElement(iNet, element);
       return true;
-    } else if (prevElement.target.length === 1 && nextElement.source.length > 1) { // rule d
+    } else if (prevElement.target.length === 1 && nextElement.source.length >= 1) { // rule d
       if (loggingEnabled) console.log("Applied silent transition removal rule D");
       this.copyProperties(element as Transition, prevElement.source as Transition[]);
       this.mergeSourceIntoTarget(iNet, prevElement, nextElement);
@@ -329,6 +329,7 @@ export class INetEncoder {
     if (loggingEnabled) console.log(`Merging (ID: ${source.id}, type: ${source.constructor.name}) into (ID: ${target.id}, type: ${target.constructor.name})`);
     this.linkNewSources(target, source.source);
     if (source instanceof Transition) this.copyProperties(source, [target as Transition]);
+    if (iNet.initial == source) iNet.initial = target as Place;
     this.deleteElement(iNet, source);
   }
 
@@ -336,6 +337,7 @@ export class INetEncoder {
     if (loggingEnabled) console.log(`Merging (ID: ${target.id}, type: ${target.constructor.name}) into (ID: ${source.id}, type: ${source.constructor.name})`);
     this.linkNewTargets(source, target.target);
     if (target instanceof Transition) this.copyProperties(target, [source as Transition]);
+    if (iNet.end == target) iNet.end = source as Place;
     this.deleteElement(iNet, target);
   }
 
@@ -436,6 +438,6 @@ export class INetEncoder {
         deleteFromArray(subNet.sourceIDs, copyFrom.id);
         subNet.sourceIDs.push(...copyTo.map(t => t.id))
       }
-    } 
+    }
   }
 }
