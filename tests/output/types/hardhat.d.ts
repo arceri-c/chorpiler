@@ -33,6 +33,10 @@ declare module "hardhat/types/runtime" {
       name: "SC_ProcessExecution",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.SC_ProcessExecution__factory>;
+    getContractFactory(
+      name: "XA_ProcessExecution",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.XA_ProcessExecution__factory>;
 
     getContractAt(
       name: "IM_ProcessExecution",
@@ -59,6 +63,11 @@ declare module "hardhat/types/runtime" {
       address: string | ethers.Addressable,
       signer?: ethers.Signer
     ): Promise<Contracts.SC_ProcessExecution>;
+    getContractAt(
+      name: "XA_ProcessExecution",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.XA_ProcessExecution>;
 
     deployContract(
       name: "IM_ProcessExecution",
@@ -80,6 +89,10 @@ declare module "hardhat/types/runtime" {
       name: "SC_ProcessExecution",
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.SC_ProcessExecution>;
+    deployContract(
+      name: "XA_ProcessExecution",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.XA_ProcessExecution>;
 
     deployContract(
       name: "IM_ProcessExecution",
@@ -106,6 +119,11 @@ declare module "hardhat/types/runtime" {
       args: any[],
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.SC_ProcessExecution>;
+    deployContract(
+      name: "XA_ProcessExecution",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.XA_ProcessExecution>;
 
     // default types
     getContractFactory(

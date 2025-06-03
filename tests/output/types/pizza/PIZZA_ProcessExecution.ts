@@ -26,7 +26,7 @@ export interface PIZZA_ProcessExecutionInterface extends Interface {
       | "enact"
       | "items"
       | "participants"
-      | "setitems"
+      | "setItems"
       | "tokenState"
   ): FunctionFragment;
 
@@ -36,7 +36,7 @@ export interface PIZZA_ProcessExecutionInterface extends Interface {
     functionFragment: "participants",
     values: [BigNumberish]
   ): string;
-  encodeFunctionData(functionFragment: "setitems", values: [boolean]): string;
+  encodeFunctionData(functionFragment: "setItems", values: [boolean]): string;
   encodeFunctionData(
     functionFragment: "tokenState",
     values?: undefined
@@ -48,7 +48,7 @@ export interface PIZZA_ProcessExecutionInterface extends Interface {
     functionFragment: "participants",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "setitems", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "setItems", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "tokenState", data: BytesLike): Result;
 }
 
@@ -101,7 +101,7 @@ export interface PIZZA_ProcessExecution extends BaseContract {
 
   participants: TypedContractMethod<[arg0: BigNumberish], [string], "view">;
 
-  setitems: TypedContractMethod<[_items: boolean], [void], "nonpayable">;
+  setItems: TypedContractMethod<[_items: boolean], [void], "nonpayable">;
 
   tokenState: TypedContractMethod<[], [bigint], "view">;
 
@@ -119,7 +119,7 @@ export interface PIZZA_ProcessExecution extends BaseContract {
     nameOrSignature: "participants"
   ): TypedContractMethod<[arg0: BigNumberish], [string], "view">;
   getFunction(
-    nameOrSignature: "setitems"
+    nameOrSignature: "setItems"
   ): TypedContractMethod<[_items: boolean], [void], "nonpayable">;
   getFunction(
     nameOrSignature: "tokenState"

@@ -6,3 +6,4 @@ export * as outOfOrder from "./out-of-order";
 export * as pizza from "./pizza";
 export * as rentalAgreement from "./rental-agreement";
 export * as supplyChain from "./supply-chain";
+export * as xorAnd from "./xor-and";

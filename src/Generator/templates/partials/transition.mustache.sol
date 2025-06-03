@@ -17,7 +17,9 @@ break; // is end
 {{/isEnd}}
 {{^isEnd}}
 {{#initiator}}
+{{#loopProtection}}
 id = 0;
+{{/loopProtection}}
 {{/initiator}}
 continue; 
 {{/isEnd}}

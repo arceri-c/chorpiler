@@ -1,5 +1,5 @@
 {
   "extension": ["ts"],
-  "require": ["ts-mocha", "hardhat/register"],
+  "require": ["tsx", "hardhat/register"],
   "timeout": 40000
 }

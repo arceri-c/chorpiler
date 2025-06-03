@@ -1,13 +1,14 @@
 import { assert } from "console";
 import * as Encoding from "./Encoding";
 import { IFromEncoding } from "./IFromEncoding";
+import { capitalize } from "../../util/helpers";
 
 class MustacheProcessEncoding {
   constructor(
     public id: string, // ID in form 0...n assigned by generator
     public modelID: string, // ID as was found in model
     public participants: Participant[],
-    public caseVariables: Encoding.CaseVariable[],
+    public caseVariables: CaseVariable[],
     public states: State[],
   ) {}
 
@@ -24,7 +25,7 @@ class MustacheProcessEncoding {
       encoding.id.toString(),
       encoding.modelID,
       Array.from(encoding.participants.values()).map(p => new Participant(p.id.toString(), p.modelID, p.name, p.address)),
-      Array.from(encoding.caseVariables.values()),
+      Array.from(encoding.caseVariables.values()).map(c => new CaseVariable(c.name, c.type, c.expression, c.setters)),
       MustacheProcessEncoding.convertStates(states),
     );
   }
@@ -70,19 +71,23 @@ export class MustacheEncoding extends MustacheProcessEncoding implements IFromEn
   hasSubProcesses = () => this.subProcesses.length > 0;
   numberOfProcesses = () => (this.subProcesses.length + 1).toString();
 
-  constructor(public subProcesses: MustacheProcessEncoding[] = [], ...args: ConstructorParameters<typeof MustacheProcessEncoding>
+  constructor(
+    public subProcesses: MustacheProcessEncoding[] = [], 
+    public loopProtection = true,
+    ...args: ConstructorParameters<typeof MustacheProcessEncoding>
   ) {
     super(...args);
+    //console.log(JSON.stringify(this.states));
   }
 
   static fromEncoding(encoding: Encoding.MainProcess): MustacheEncoding {
     const main = MustacheProcessEncoding.fromEncoding(encoding);
     const subProcesses = Array.from(encoding.subProcesses.values()).map(MustacheProcessEncoding.fromEncoding);
-
     //console.log(encoding.states);
 
     return new MustacheEncoding(
       subProcesses, 
+      encoding.loopProtection,
       main.id,
       main.modelID, 
       main.participants, 
@@ -128,14 +133,15 @@ class State {
     public last: boolean | null = null
   ) {
     const defaultBranches = this.transitions.filter(t => t.defaultBranch);
+    const decisions = this.transitions.filter(t => t.decision);
     assert(defaultBranches.length <= 1);
-    if (defaultBranches.length > 0) {
+    if (decisions.length > 0) {
       this.isDecision = true;
       this.transitions = [
         ...this.transitions.filter(t => !t.defaultBranch),
         ...defaultBranches,
       ];
-      if (transitions.length > 0) {
+      if (transitions.length > 0 && defaultBranches.length === 1) {
         assert(transitions[transitions.length - 1].defaultBranch, "The last transition must be the defaultBranch.");
       }
     }
@@ -149,4 +155,17 @@ class Participant {
     public name: string,
     public address: string
   ) {}
+}
+
+class CaseVariable {
+  constructor(
+    public name: string,
+    public type: string,
+    public expression: string,
+    public setters: boolean
+  ) {
+    this.functionName = "set" + capitalize(name);
+  }
+
+  public functionName: string;
 }

@@ -25,6 +25,8 @@ export class SubProcess extends Process {
 }
 
 export class MainProcess extends Process {
+  public loopProtection = true;
+
   constructor() {
     super(0);
   }

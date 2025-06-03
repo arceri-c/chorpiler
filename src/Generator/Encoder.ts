@@ -8,21 +8,26 @@ import { InteractionNet } from '../Parser/InteractionNet';
 import * as Encoding from "./Encoding/Encoding";
 import { assert } from 'console';
 
+const loggingEnabled = false; // Toggleable logging
+
 export class INetEncoder {
 
   private mainEncoded = new Encoding.MainProcess();
   
   public generate(
     _iNet: InteractionNet, 
-    options: { unfoldSubNets: boolean } // If true,
-    // sub choreographies are "folded" into the main choreography, i.e.,
-    // they are treated as visual option only with no consequence for the generated contract
+    options: { 
+      unfoldSubNets: boolean, // If true, sub choreographies are "folded" into the main choreography, i.e.,
+      // they are treated as visual option only with no consequence for the generated contract
+      loopProtection: boolean
+    } 
   ) {
     const iNet: InteractionNet = {..._iNet}
     if (iNet.initial == null || iNet.end == null) {
       throw new Error("Invalid InteractionNet"); 
     }
     this.mainEncoded.modelID = iNet.id;
+    this.mainEncoded.loopProtection = options.loopProtection;
     // create participant template options and IDs
     [...iNet.participants.values()].forEach((par, encodedID) => {
       this.mainEncoded.participants.set(par.id, new Encoding.Participant(
@@ -36,7 +41,7 @@ export class INetEncoder {
     if (options.unfoldSubNets) {
       // sub choreographies are "folded" into the main choreography, i.e.,
       // they are treated as visual option only with no consequence for the generated contract
-      this.unfoldSubNets(iNet); // TODO: Recursively unfold all subnets
+      this.unfoldSubNets(iNet); // Recursively unfold all subnets
     }
 
     this.encodeNets(this.mainEncoded, iNet);
@@ -136,6 +141,8 @@ export class INetEncoder {
     // transitions to ids
     const taskIDs = new Map<string, number>();
     const transitions = new Array<Transition>();
+    const taskIDoffset = this.mainEncoded.loopProtection === true ? 1 : 0; // keep 0 for noop, noop is required for loop protection,
+    // loop protection: set taskID to noop, once it is executed once, to prevent endless execution loops.
 
     for (const element of iNet.elements.values()) {
       if (!(element instanceof Transition)) { // don't need extra IDs for other choreos
@@ -145,7 +152,7 @@ export class INetEncoder {
         throw new Error(`Unconnected transition in interaction net ${element.id}`);
       }
       if (!this.isSilentTransition(element)) {  // silent transitions don't need external IDs
-        taskIDs.set(element.id, taskIDs.size + 1); // keep 0 for noop
+        taskIDs.set(element.id, taskIDs.size + taskIDoffset); 
       }
       transitions.push(element);
     }
@@ -244,10 +251,12 @@ export class INetEncoder {
     if (!(element instanceof Place)) return;
 
     if (this.isSilentTransition(prevElement)) {
+      if (loggingEnabled) console.log("Applied silent transition removal rule a, b, e, f.1, h");
       this.mergeSourceIntoTarget(iNet, prevElement, nextElement);
       this.deleteElement(iNet, element);
       return true;
     } else if (this.isSilentTransition(nextElement)) {
+      if (loggingEnabled) console.log("Applied silent transition removal rule a, b, e, f.1, h");
       this.mergeTargetIntoSource(iNet, prevElement, nextElement);
       this.deleteElement(iNet, element);
       return true;
@@ -260,11 +269,13 @@ export class INetEncoder {
     if (!this.isSilentTransition(prevElement) || !this.isSilentTransition(nextElement)) return;
     if (!(element instanceof Place)) return;
 
-    if (prevElement.target.length > 1 && nextElement.source.length === 1) { // rule f.2
+    if (prevElement.target.length >= 1 && nextElement.source.length === 1) { // rule f.2
+      if (loggingEnabled) console.log("Applied silent transition removal rule F.2");
       this.mergeTargetIntoSource(iNet, prevElement, nextElement);
       this.deleteElement(iNet, element);
       return true;
     } else if (prevElement.target.length === 1 && nextElement.source.length > 1) { // rule g
+      if (loggingEnabled) console.log("Applied silent transition removal rule G");
       this.mergeSourceIntoTarget(iNet, prevElement, nextElement);
       this.deleteElement(iNet, element);
       return true;
@@ -277,11 +288,13 @@ export class INetEncoder {
     if (!this.isSilentTransition(element)) return;
     assert(element instanceof Transition);
     if (prevElement.target.length > 1 && nextElement.source.length === 1) { // rule c
+      if (loggingEnabled) console.log("Applied silent transition removal rule C");
       this.copyProperties(element as Transition, nextElement.target as Transition[]);
       this.mergeTargetIntoSource(iNet, prevElement, nextElement);
       this.deleteElement(iNet, element);
       return true;
-    } else if (prevElement.target.length === 1 && nextElement.source.length > 1) { // rule d
+    } else if (prevElement.target.length === 1 && nextElement.source.length >= 1) { // rule d
+      if (loggingEnabled) console.log("Applied silent transition removal rule D");
       this.copyProperties(element as Transition, prevElement.source as Transition[]);
       this.mergeSourceIntoTarget(iNet, prevElement, nextElement);
       this.deleteElement(iNet, element);
@@ -291,52 +304,65 @@ export class INetEncoder {
   }
 
   // rule i
-  private removeSilentTransitionCaseD(iNet: InteractionNet, prevElement: Element, element: Element, nextElement: Element) {
-    if (element.source.length !== 1 || element.target.length !== 1) return;
+  private removeSilentTransitionCaseD(iNet: InteractionNet, element: Element) {
+    if (element.source.length !== 1 || element.target.length <= 1) return;
     if (!this.isSilentTransition(element)) return;
     assert(element instanceof Transition);
-
-    if (this.isSilentTransition(element) // rule i
-      && element.source.length === 1 && element.target.length > 1
+    if (element.source.length === 1 && element.target.length > 1
       && element.source[0].source.length > 0 && element.source[0].target.length > 1
       ) {
+      if (loggingEnabled) console.log("Applied silent transition removal rule I");
       // XOR -> AND, XOR not immediately after start event (a manual task is present before the XOR)
-      const xorPlace = element.source[0];
-      const andPlaces = element.target;
+      const xorPlace = element.source[0]; // p0
+      assert(xorPlace instanceof Place);
+      const andPlaces = element.target; // p1, p2, ...
       for (const prevTransition of xorPlace.source) this.linkNewTargets(prevTransition, andPlaces);
       for (const andPlace of andPlaces) this.linkNewTargets(andPlace, xorPlace.target);
       this.deleteElement(iNet, element);
-      this.deleteElement(iNet, xorPlace); 
+      this.deleteElement(iNet, xorPlace);
       return true;
     }
     return false;
   }
 
   private mergeSourceIntoTarget(iNet: InteractionNet, source: Element, target: Element) {
+    if (loggingEnabled) console.log(`Merging (ID: ${source.id}, type: ${source.constructor.name}) into (ID: ${target.id}, type: ${target.constructor.name})`);
     this.linkNewSources(target, source.source);
     if (source instanceof Transition) this.copyProperties(source, [target as Transition]);
+    if (iNet.initial == source) iNet.initial = target as Place;
     this.deleteElement(iNet, source);
   }
 
   private mergeTargetIntoSource(iNet: InteractionNet, source: Element, target: Element) {
+    if (loggingEnabled) console.log(`Merging (ID: ${target.id}, type: ${target.constructor.name}) into (ID: ${source.id}, type: ${source.constructor.name})`);
     this.linkNewTargets(source, target.target);
     if (target instanceof Transition) this.copyProperties(target, [source as Transition]);
+    if (iNet.end == target) iNet.end = source as Place;
     this.deleteElement(iNet, target);
   }
 
   public removeSilentTransitions(iNet: InteractionNet) {
-    for (const element of iNet.elements.values()) {
-      if (element.source.length === 1 && element.target.length === 1) {
+    outer: while (true) {
+      for (const element of Array.from(iNet.elements.values())) {
         const prevElement = element.source[0];
         const nextElement = element.target[0];
-        if ((element instanceof Place)) {
-          if (this.removeSilentTransitionCaseA(iNet, prevElement, element, nextElement)) continue;
-          if (this.removeSilentTransitionCaseB(iNet, prevElement, element, nextElement)) continue;
+        if (element instanceof Place) {
+          if (this.removeSilentTransitionCaseA(iNet, prevElement, element, nextElement)) {
+            continue outer;
+          }
+          if (this.removeSilentTransitionCaseB(iNet, prevElement, element, nextElement)) {
+            continue outer;
+          }
         } else {
-          if (this.removeSilentTransitionCaseC(iNet, prevElement, element, nextElement)) continue;
-          if (this.removeSilentTransitionCaseD(iNet, prevElement, element, nextElement)) continue;
+          if (this.removeSilentTransitionCaseC(iNet, prevElement, element, nextElement)) {
+            continue outer;
+          }
+          if (this.removeSilentTransitionCaseD(iNet, element)) {
+            continue outer;
+          }
         }
       }
+      break;
     }
     return iNet;
   }
@@ -412,6 +438,6 @@ export class INetEncoder {
         deleteFromArray(subNet.sourceIDs, copyFrom.id);
         subNet.sourceIDs.push(...copyTo.map(t => t.id))
       }
-    } 
+    }
   }
 }

@@ -11,11 +11,13 @@ import { TriggerEncoding } from "../../src";
 import { XESFastXMLParser } from "../../src/util/EventLog/XESFastXMLParser";
 import { EventLog } from "../../src/util/EventLog/EventLog";
 
-import encodingSC from '../data/generated/supply-chain/SC_ProcessExecution_encoding.json';
-import encodingIM from '../data/generated/incident-management/IM_ProcessExecution_encoding.json';
-import encodingPH from '../data/generated/out-of-order/PH_ProcessExecution_encoding.json';
-import encodingPIZZA from '../data/generated/pizza/PIZZA_ProcessExecution_encoding.json';
-import encodingRA from '../data/generated/rental-agreement/RA_ProcessExecution_encoding.json';
+import encodingSC from './contracts/supply-chain/SC_ProcessExecution_encoding.json';
+import encodingIM from './contracts/incident-management/IM_ProcessExecution_encoding.json';
+import encodingPH from './contracts/out-of-order/PH_ProcessExecution_encoding.json';
+import encodingPIZZA from './contracts/pizza/PIZZA_ProcessExecution_encoding.json';
+import encodingRA from './contracts/rental-agreement/RA_ProcessExecution_encoding.json';
+import encodingXA from './contracts/xor-and/XA_ProcessExecution_encoding.json';
+import { capitalize } from "../../src/util/helpers";
 
 const NR_NON_CONFORMING_TRACES = 0;
 const parser = new XESFastXMLParser();
@@ -36,6 +38,9 @@ const parser = new XESFastXMLParser();
 
   const eventLogRA = await parser.fromXML(
     readFileSync(path.join(BPMN_PATH, 'cases', 'rental-agreement', 'rental-agreement.xes')));
+
+  const eventLogXA = await parser.fromXML(
+    readFileSync(path.join(BPMN_PATH, 'cases', 'xor-and', 'xor-and.xes')));
 
   describe('Test Execution of Cases', () => {
 
@@ -75,6 +80,15 @@ const parser = new XESFastXMLParser();
         );
       });
 
+    describe('XOR AND Case', () => {
+
+      testCase(
+        eventLogXA, 
+        TriggerEncoding.fromJSON(encodingXA),
+        "XA"
+      );
+    });
+
     describe.skip('Rental Agreement Case', () => {
 
       testCase(
@@ -109,6 +123,16 @@ const testCase = (
 
         for (const event of trace) {
           // Implement data change, allow data change also if event name not found
+          // data changes
+          if (event.dataChange) {
+            for (const el of event.dataChange) {
+              const methodName = "set" + capitalize(el.variable);
+              const tx = await (await contract["" + methodName](el.val)).wait(1);
+              console.debug('Gas', 'Write', event.name, el.variable, el.val, ":", tx.gasUsed);
+              totalGasCost += tx.gasUsed;
+            }
+          }
+          
           const participant = contracts.get(event.source);
           const taskID = TriggerEncoding.tasks.get(event.id);
           assert(participant !== undefined, `source (participant) '${event.source}' for event '${event.name}' not found`);
@@ -123,15 +147,6 @@ const testCase = (
             expect(await contract.tokenState()).to.not.equal(preTokenState);
             console.debug('Gas', 'Enact Task', event.name, ":", tx.gasUsed);
             totalGasCost += tx.gasUsed;
-          }
-
-          // data changes
-          if (event.dataChange) {
-            for (const el of event.dataChange) {
-              const tx = await (await contract["set" + el.variable](el.val)).wait(1);
-              console.debug('Gas', 'Write', event.name, el.variable, el.val, ":", tx.gasUsed);
-              totalGasCost += tx.gasUsed;
-            }
           }
         }
         expect(
@@ -171,7 +186,8 @@ const testCase = (
           // data changes
           if (event.dataChange) {
             for (const el of event.dataChange) {
-              const tx = await (await contract["set" + el.variable](el.val)).wait(1);
+              const methodName = "set" + capitalize(el.variable);
+              const tx = await (await contract["" + methodName](el.val)).wait(1);
             }
           }
         }

@@ -26,7 +26,7 @@ export interface IM_ProcessExecutionInterface extends Interface {
       | "enact"
       | "participants"
       | "resolved"
-      | "setresolved"
+      | "setResolved"
       | "tokenState"
   ): FunctionFragment;
 
@@ -37,7 +37,7 @@ export interface IM_ProcessExecutionInterface extends Interface {
   ): string;
   encodeFunctionData(functionFragment: "resolved", values?: undefined): string;
   encodeFunctionData(
-    functionFragment: "setresolved",
+    functionFragment: "setResolved",
     values: [boolean]
   ): string;
   encodeFunctionData(
@@ -52,7 +52,7 @@ export interface IM_ProcessExecutionInterface extends Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "resolved", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: "setresolved",
+    functionFragment: "setResolved",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "tokenState", data: BytesLike): Result;
@@ -107,7 +107,7 @@ export interface IM_ProcessExecution extends BaseContract {
 
   resolved: TypedContractMethod<[], [boolean], "view">;
 
-  setresolved: TypedContractMethod<[_resolved: boolean], [void], "nonpayable">;
+  setResolved: TypedContractMethod<[_resolved: boolean], [void], "nonpayable">;
 
   tokenState: TypedContractMethod<[], [bigint], "view">;
 
@@ -125,7 +125,7 @@ export interface IM_ProcessExecution extends BaseContract {
     nameOrSignature: "resolved"
   ): TypedContractMethod<[], [boolean], "view">;
   getFunction(
-    nameOrSignature: "setresolved"
+    nameOrSignature: "setResolved"
   ): TypedContractMethod<[_resolved: boolean], [void], "nonpayable">;
   getFunction(
     nameOrSignature: "tokenState"
