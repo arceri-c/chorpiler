@@ -1,6 +1,10 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
 
+interface IERC20 {
+    function transfer(address recipient, uint256 amount) external returns (bool);
+}
+
 contract {{{modelID}}} {
   {{^hasSubProcesses}}
   uint public tokenState = 1;
@@ -24,7 +28,7 @@ contract {{{modelID}}} {
   {{/setters}}
   {{/caseVariables}}
 
-  function enact(uint id) external {
+  function enact(uint id) external payable {
     {{> execution}}
   }
 

@@ -95,24 +95,44 @@ export class TaskTransition extends Transition {
 interface InitiatedTransitionParams extends TaskTransitionParams {
   modelID: string;
   initiatorID: number;
+  receiverID:number;
   taskName: string;
+  message: string|null;
+  transaction: boolean;
+  tokenType: string|null;
+  amount: string|null;
 }
 
 export class InitiatedTransition extends TaskTransition {
   public modelID: string;
   public initiatorID: number;
+  public receiverID: number;
   public taskName: string;
+  public message: string|null;
+  public transaction: boolean = false; //is there a transaction connected to the task?
+  public tokenType: string|null;
+  public amount: string|null; //
 
   constructor({
     modelID,
     initiatorID,
+    receiverID,
     taskName,
+    message,
+    transaction,
+    tokenType,
+    amount,
     ...transitionParams
   }: InitiatedTransitionParams) {
     super(transitionParams);
     this.modelID = modelID;
     this.initiatorID = initiatorID;
+    this.receiverID = receiverID;
     this.taskName = taskName;
+    this.message = message;
+    this.transaction = transaction;
+    this.tokenType = tokenType;
+    this.amount = amount;
   }
 }
 

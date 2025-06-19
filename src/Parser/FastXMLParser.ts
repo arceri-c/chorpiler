@@ -20,7 +20,10 @@ enum Elements {
   parallelGateway = 'parallelGateway',
   eventGateway = 'eventBasedGateway',
   outs = 'outgoing',
-  ins = 'incoming'
+  ins = 'incoming',
+  messages = 'message',
+  messageFlows = 'messageFlow',
+  messageFlowRefs = 'messageFlowRef'
 }
 enum Properties {
   id = '@_id',
@@ -29,7 +32,8 @@ enum Properties {
   name = '@_name',
   default = '@_default',
   language = "@_language", 
-  initiator = "@_initiatingParticipantRef"
+  initiator = "@_initiatingParticipantRef",
+  messageRef = "@_messageRef"
 }
 
 export class INetFastXMLParser implements INetParser {
@@ -45,15 +49,15 @@ export class INetFastXMLParser implements INetParser {
     iNet = new InteractionNet();
     flows = new Map<string, { flow: any, place: Place|null }>;
 
-    translate(choreography: any): InteractionNet {
+    translate(choreography: any, messages: any): InteractionNet {
       // need to parse participants first, so we can reference them
       this.parseParticipants(choreography[Elements.participants]);
-      return this.translateChoreography(choreography);
+      return this.translateChoreography(choreography, messages);
     }
 
-    translateChoreography(choreography: any): InteractionNet {
+    translateChoreography(choreography: any, messages: any): InteractionNet {
       this.iNet.id = choreography[Properties.id];
-      this.translateElements(choreography);
+      this.translateElements(choreography, messages);
       return this.iNet;
     }
 
@@ -65,13 +69,13 @@ export class INetFastXMLParser implements INetParser {
       }
     }
 
-    private translateElements(choreography: any) {
+    private translateElements(choreography: any, messages: any) {
       this
         // need to parse flows first, so they're accessible
         .parseFlows(choreography[Elements.flows])
         .translateStartEvent(choreography[Elements.startEvent])
         .translateEndEvent(choreography[Elements.endEvent])
-        .translateTasks(choreography[Elements.tasks])
+        .translateTasks(choreography[Elements.tasks], messages, choreography[Elements.messageFlows])
         this.translateSubChoreography(choreography[Elements.subChoreographies])
         // translate events before gateways
         .translateExclusiveGateways(choreography[Elements.exclusiveGateway])
@@ -96,7 +100,7 @@ export class INetFastXMLParser implements INetParser {
         const subTransition = this.addTransition(new Transition(
           subChoreography[Properties.id], 
           new SubChoreographyTaskLabel(initiator, respondents, subNetID, subNetID, 
-            subChoreography[Properties.id], TaskType.CallChoreography))
+            subChoreography[Properties.id], null, TaskType.CallChoreography))
         );
         this.translateIncomingFlows(subTransition, subChoreography[Elements.ins]);
         this.translateOutgoingFlows(subTransition, subChoreography[Elements.outs]);
@@ -107,7 +111,7 @@ export class INetFastXMLParser implements INetParser {
         subNet.participants.set(initiator.id, initiator);
         for (const respondent of respondents) subNet.participants.set(respondent.id, respondent);
         // translate sub choreography
-        this.iNet.subNets.set(subNetID, translator.translateChoreography(subChoreography));
+        this.iNet.subNets.set(subNetID, translator.translateChoreography(subChoreography, null));//null as a placeholder
       }
       return this;
     }
@@ -162,13 +166,28 @@ export class INetFastXMLParser implements INetParser {
       return this;
     }
 
-    private translateTasks(tasks: any): this {
+    private translateTasks(tasks: any, messages: any, messageFlows: any): this {
       if (tasks == null) return this;
 
       for (const task of tasks) {
         const { initiator , respondents } = this.parseInitiatorRespondents(task);
+        const messageFlowRef = task[Elements.messageFlowRefs];
+        let taskMessage : any;
+        for (const messageFlow of messageFlows) {
+          for (const message of messages) {
+            if (messageFlowRef == messageFlow[Properties.id] && messageFlow[Properties.messageRef]==message[Properties.id]){
+              if (message[Properties.name]) {
+                taskMessage = message[Properties.name];
+              }
+              else {
+                taskMessage = null;
+              }
+            }
+          }
+        }
+
         const transition = this.addTransition(
-          new Transition(task[Properties.id], new TaskLabel(initiator!, respondents!, task[Properties.name], task[Properties.id]))
+          new Transition(task[Properties.id], new TaskLabel(initiator!, respondents!, task[Properties.name], task[Properties.id], taskMessage))
         );
         this.translateIncomingFlows(transition, task[Elements.ins]);
         this.translateOutgoingFlows(transition, task[Elements.outs]);
@@ -433,8 +452,9 @@ export class INetFastXMLParser implements INetParser {
       const iNets = new Array<InteractionNet>();
       for (const choreography of rootElements[Elements.choreographies]) {
         const iNetTranslator = new INetFastXMLParser.INetTranslator();
+        const messages = rootElements[Elements.messages];
         try {
-          const iNet = iNetTranslator.translate(choreography);
+          const iNet = iNetTranslator.translate(choreography, messages);
           iNets.push(iNet);
         } catch (error) {
           return reject(error);

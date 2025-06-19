@@ -4,6 +4,9 @@ if ({{#conditions}}{{> condition}}{{/conditions}}) {
 {{/hasConditions}}
 {{#taskName}}
 // <--- custom code for task here --->
+{{#transaction}}
+IERC20({{{tokenType}}}).transfer(participants[{{{receiver}}}],{{{amount}}});
+{{/transaction}}
 {{/taskName}}
 _tokenState &= ~uint({{{consume}}});
 {{#outTo}}

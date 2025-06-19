@@ -51,11 +51,16 @@ class MustacheProcessEncoding {
       t instanceof Encoding.TaskTransition ? t.taskID.toString() : "",
       t instanceof Encoding.InitiatedTransition ? t.modelID : "",
       t instanceof Encoding.InitiatedTransition ? t.initiatorID.toString() : "",
+      t instanceof Encoding.InitiatedTransition ? t.receiverID.toString() : "",
       t instanceof Encoding.InitiatedTransition ? t.taskName : "",
       t.condition ?? "",
       t.isEnd,
       t.defaultBranch,
       t.outTo !== null ? { id: t.outTo.id.toString(), produce: t.outTo.produce.toString() } : null,
+      t instanceof Encoding.InitiatedTransition ? t.message : null,
+      t instanceof Encoding.InitiatedTransition ? t.transaction : false,
+      t instanceof Encoding.InitiatedTransition ? t.tokenType : null,
+      t instanceof Encoding.InitiatedTransition ? t.amount : null,
     );
   }
 }
@@ -106,11 +111,16 @@ class Transition {
     public taskID: string,
     public modelID: string, // ID as was found in model
     public initiator: string,
+    public receiver:string,
     public taskName: string,
     public decision: string,
     public isEnd: boolean,
     public defaultBranch: boolean,
-    public outTo: { id: string; produce: string } | null
+    public outTo: { id: string; produce: string } | null,
+    public message: string | null,
+    public transaction: boolean,
+    public tokenType: string|null,
+    public amount: string|null,
   ) {
     if (this.taskID) {
       this.conditions.push({content: this.taskID, hasID: true, last: false})

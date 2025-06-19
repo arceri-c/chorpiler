@@ -208,12 +208,30 @@ export class INetEncoder {
         }));
       }
       else if (element.label instanceof TaskLabel) {
+        let transaction = false;        
+        let amount: string | null = null; 
+        let tokenType: string | null = null;
+        if (element.label.message){ //parse message
+          const parsedMessage = element.label.message.split('_');
+          if (parsedMessage[0] == "transfer") {
+            transaction = true;
+            amount = parsedMessage[1];
+            tokenType = parsedMessage[2];
+          }
+        }
+        
         encoded.addTransition(element.id, new Encoding.InitiatedTransition({
           modelID: element.id,
           initiatorID: encoded.participants.get(element.label.sender.id)!.id,
+          receiverID: encoded.participants.get(element.label.receiver[0].id)!.id,
           taskID: taskIDs.get(element.id)!,
           taskName: element.label.name,
-          consume, produce, condition, isEnd, defaultBranch
+          consume, produce, condition, isEnd, defaultBranch,
+          message : element.label.message,
+          transaction: transaction,
+          tokenType: tokenType,
+          amount: amount,
+
         }));
       }
     }

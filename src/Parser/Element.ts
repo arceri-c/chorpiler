@@ -62,17 +62,19 @@ export class EventLabel extends Label {
 }
 
 export class TaskLabel extends EventLabel {
-  constructor(sender: Participant, receiver: Participant[], name: string, modelID: string,
+  public message: string|null;
+  constructor(sender: Participant, receiver: Participant[], name: string, modelID: string,  message: string|null,
     public taskType: TaskType = TaskType.Task) { 
     super(sender, receiver, name, modelID, LabelType.Task,);
+    this.message = message;
   }
 }
 
 export class SubChoreographyTaskLabel extends TaskLabel {
-  constructor(sender: Participant, receiver: Participant[], name: string, modelID: string, 
-    public chorID: number,
+  constructor(sender: Participant, receiver: Participant[], name: string, modelID: string,
+    public chorID: number,  message:string|null,
     type: TaskType.SubChoreography | TaskType.CallChoreography) {
-    super(sender, receiver, name, modelID, type);
+    super(sender, receiver, name, modelID, message, type);
   }
 }
 
