@@ -10,10 +10,13 @@ class MustacheProcessEncoding {
     public participants: Participant[],
     public caseVariables: CaseVariable[],
     public states: State[],
+    public tokenTransfer: boolean,
+    public tokenNames : { symbol: string; index: number }[] = [],
   ) {}
 
   hasStates = () => this.states.length > 0;
   numberOfParticipants = () => this.participants.length.toString();
+  numberOfTokens = () => this.tokenNames.length.toString();
 
   static fromEncoding(encoding: Encoding.Process) {
     const states = new Map<number, Encoding.Transition[]>();
@@ -27,6 +30,10 @@ class MustacheProcessEncoding {
       Array.from(encoding.participants.values()).map(p => new Participant(p.id.toString(), p.modelID, p.name, p.address)),
       Array.from(encoding.caseVariables.values()).map(c => new CaseVariable(c.name, c.type, c.expression, c.setters)),
       MustacheProcessEncoding.convertStates(states),
+      encoding.tokenTransfer,
+      // qua copia i tokennames as a mapping
+      Array.from(encoding.tokenNames).map((symbol, index) => ({ symbol, index })),
+      //encoding.tokenNames,
     );
   }
 
@@ -58,9 +65,9 @@ class MustacheProcessEncoding {
       t.defaultBranch,
       t.outTo !== null ? { id: t.outTo.id.toString(), produce: t.outTo.produce.toString() } : null,
       t instanceof Encoding.InitiatedTransition ? t.message : null,
-      t instanceof Encoding.InitiatedTransition ? t.transaction : false,
-      t instanceof Encoding.InitiatedTransition ? t.tokenType : null,
-      t instanceof Encoding.InitiatedTransition ? t.amount : null,
+      t instanceof Encoding.InitiatedTransition ? t.tokenTransfer : false,
+      t instanceof Encoding.InitiatedTransition ? t.tokenName : null,
+      t instanceof Encoding.InitiatedTransition ? t.amount : undefined,
     );
   }
 }
@@ -97,7 +104,9 @@ export class MustacheEncoding extends MustacheProcessEncoding implements IFromEn
       main.modelID, 
       main.participants, 
       main.caseVariables, 
-      main.states);
+      main.states,
+      encoding.tokenTransfer,
+      main.tokenNames);
   }
 }
 
@@ -118,9 +127,9 @@ class Transition {
     public defaultBranch: boolean,
     public outTo: { id: string; produce: string } | null,
     public message: string | null,
-    public transaction: boolean,
-    public tokenType: string|null,
-    public amount: string|null,
+    public tokenTransfer: boolean,
+    public tokenName: string|null,
+    public amount: string|undefined,
   ) {
     if (this.taskID) {
       this.conditions.push({content: this.taskID, hasID: true, last: false})

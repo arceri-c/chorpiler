@@ -4,6 +4,8 @@ export class Process {
   public states = new Map<number, Transition[]>();
   caseVariables = new Map<string, CaseVariable>();
   public modelID = ""; // ID as was found in model
+  public tokenTransfer = false;
+  public tokenNames : string[] = [];
 
   constructor(
     public id: number, // ID in form 0...n assigned by generator
@@ -98,9 +100,9 @@ interface InitiatedTransitionParams extends TaskTransitionParams {
   receiverID:number;
   taskName: string;
   message: string|null;
-  transaction: boolean;
-  tokenType: string|null;
-  amount: string|null;
+  tokenTransfer: boolean;
+  tokenName: string|null;
+  amount: string|undefined;
 }
 
 export class InitiatedTransition extends TaskTransition {
@@ -109,9 +111,9 @@ export class InitiatedTransition extends TaskTransition {
   public receiverID: number;
   public taskName: string;
   public message: string|null;
-  public transaction: boolean = false; //is there a transaction connected to the task?
-  public tokenType: string|null;
-  public amount: string|null; //
+  public tokenTransfer: boolean = false; //is there a tokenTransfer connected to the task?
+  public tokenName: string|null;
+  public amount: string|undefined; //
 
   constructor({
     modelID,
@@ -119,8 +121,8 @@ export class InitiatedTransition extends TaskTransition {
     receiverID,
     taskName,
     message,
-    transaction,
-    tokenType,
+    tokenTransfer,
+    tokenName,
     amount,
     ...transitionParams
   }: InitiatedTransitionParams) {
@@ -130,8 +132,8 @@ export class InitiatedTransition extends TaskTransition {
     this.receiverID = receiverID;
     this.taskName = taskName;
     this.message = message;
-    this.transaction = transaction;
-    this.tokenType = tokenType;
+    this.tokenTransfer = tokenTransfer;
+    this.tokenName = tokenName;
     this.amount = amount;
   }
 }

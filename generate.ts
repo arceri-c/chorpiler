@@ -1,13 +1,8 @@
 import * as fs from 'fs';
-// import chorpiler, { TriggerEncoding } from 'chorpiler';
-
-//import { INetParser } from './src/Parser/Parser';
-//import SolDefaultContractGenerator from "./src/Generator/target/Sol/DefaultGenerator";
-//import { TriggerEncoding } from './src/Generator/Encoding/TriggerEncoding'; // adjust path if needed
-import chorpiler, { TriggerEncoding } from './src'; // assumes index.ts is in ./src
+import chorpiler, { TriggerEncoding } from './src'; 
 
 const parser = new chorpiler.Parser();
-const bpmnXML = fs.readFileSync("diagram.bpmn");
+const bpmnXML = fs.readFileSync("rental-agreement.bpmn");
 
 parser.fromXML(bpmnXML)
   .then((iNet) => {

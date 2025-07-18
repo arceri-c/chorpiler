@@ -1,37 +1,45 @@
-import { Place, TaskLabel, Transition, Element, PlaceType, Label, LabelType } from "../Parser/Element";
-import { InteractionNet } from "../Parser/InteractionNet";
+import {
+  Place,
+  TaskLabel,
+  Transition,
+  Element,
+  PlaceType,
+  Label,
+  LabelType,
+} from '../Parser/Element';
+import { InteractionNet } from '../Parser/InteractionNet';
 
 export const deleteFromArray = (array: Array<any>, key: any) => {
   const index = array.indexOf(key, 0);
   if (index > -1) {
     array.splice(index, 1);
   }
-}
+};
 
 export const capitalize = (name: string): string => {
   return name.charAt(0).toUpperCase() + name.slice(1);
-}
+};
 
 export const printInet = (iNet: InteractionNet): void => {
   console.log(`Interaction Net: ${iNet.id}`);
   if (!iNet.initial) {
-    console.log("No initial place defined.");
+    console.log('No initial place defined.');
     return;
   }
 
   const visited = new Set<string>();
   const traverse = (element: Element, depth: number = 0) => {
     if (visited.has(element.id)) {
-      console.log(`${"  ".repeat(depth)}(Loop back to ${element.id})`);
+      console.log(`${'  '.repeat(depth)}(Loop back to ${element.id})`);
       return;
     }
 
     visited.add(element.id);
 
     if (element instanceof Place) {
-      console.log(`${"  ".repeat(depth)}o ${element.id}`);
+      console.log(`${'  '.repeat(depth)}o ${element.id}`);
       if (element.type === PlaceType.End) {
-        console.log(`${"  ".repeat(depth)} (End)`);
+        console.log(`${'  '.repeat(depth)} (End)`);
         return;
       }
       for (const transition of element.target) {
@@ -50,12 +58,12 @@ export const printInet = (iNet: InteractionNet): void => {
       // Print guards if they exist
       if (element.label.guard) {
         const guardDetails = Array.from(element.label.guard.conditions.entries())
-          .map(([_, guard]) => `${guard || "defaultflow"}`)
-          .join(", ");
+          .map(([_, guard]) => `${guard || 'defaultflow'}`)
+          .join(', ');
         transitionDetails += ` !Guards: ${guardDetails}`;
       }
 
-      console.log(`${"  ".repeat(depth)}${transitionDetails}`);
+      console.log(`${'  '.repeat(depth)}${transitionDetails}`);
       for (const place of element.target) {
         traverse(place, depth + 1);
       }
@@ -66,4 +74,4 @@ export const printInet = (iNet: InteractionNet): void => {
   for (const subNet of iNet.subNets.values()) {
     printInet(subNet);
   }
-}
+};
