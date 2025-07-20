@@ -7,14 +7,15 @@
 
 ## Overview
 
-| Element            | Supported  |
-|--------------------|------------|
-| Choreography tasks | ✔          |
-| Events             | Start, End |
-| Gateways           | XOR, EVENT, AND |
-| Sub-Choreographies           | ✔ |
-| Looping behaviour  | ✔          |
-| Uncontrolled flow merge  | ✔          |
+| Element                  | Supported          |
+|--------------------------|--------------------|
+| Choreography tasks       | ✔                  |
+| Events                   | Start, End         |
+| Gateways                 | XOR, EVENT, AND    |
+| Sub-Choreographies       | ✔                  |
+| Looping behaviour        | ✔                  |
+| Uncontrolled flow merge  | ✔                  |
+| **Messages**             | ✔ (token transfers) |
 
 ## Usage
 
@@ -58,6 +59,8 @@ contractGenerator.compile().then((gen) => {
 })
 .catch(err => console.error(err));
 ```
+Token Transfer via Messages
+Chorpiler now supports modeling ERC-20 token transfers using BPMN message elements. Token transfer messages must follow the convention transfer_<amount>_<tokenSymbol>. For example, transfer_10_USDC models a transfer of 10 USDC tokens. The message models a token transfer frmo the initiator of the task to the receiver.
 
 For usage see also the tests defined in `tests/compiler`. For usage of the resulting smart contracts also see `tests/output`.
 
@@ -70,6 +73,8 @@ Two groups of tests exist:
 - **Testing the generated output:** By running `npm run test/output`, tests are executed confirming that the produced outputs are valid artefacts, by replaying conforming logs (which must lead to a valid execution) and non-conforming logs (which must be rejected). Gas cost are also reported for the conforming logs. These tests are found in `tests/output`.
 
 `npm run test` runs both test groups.
+
+To test the token transfer feature run `npx hardhat test`
 
 ## Architecture
 > [!NOTE]
