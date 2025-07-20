@@ -11,7 +11,7 @@ parser.fromXML(bpmnXML)
     return contractGenerator.compile();
   })
   .then((gen) => {
-    fs.writeFileSync("Process_token.sol", gen.target, { flag: 'w+' });
+    fs.writeFileSync("Process.sol", gen.target, { flag: 'w+' });
     console.log("Process.sol generated.");
     console.log(TriggerEncoding.toJSON(gen.encoding));
   })

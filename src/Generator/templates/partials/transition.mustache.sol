@@ -14,7 +14,7 @@ _tokenState |= {{{produce}}};
 {{/produce}}
 {{#tokenTransfer}}
 uint8 decimals = IERC20(tokens["{{{tokenName}}}"]).decimals();
-IERC20(tokens["{{{tokenName}}}"]).transfer(participants[{{{receiver}}}],{{{amount}}} * (10 ** decimals)/ 1e6);
+IERC20(tokens["{{{tokenName}}}"]).transferFrom(msg.sender, participants[{{{receiver}}}],{{{amount}}} * (10 ** decimals)/ 1e6);
 {{/tokenTransfer}}
 {{#isEnd}}
 break; // is end
