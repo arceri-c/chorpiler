@@ -59,7 +59,7 @@ contractGenerator.compile().then((gen) => {
 })
 .catch(err => console.error(err));
 ```
-Token Transfer via Messages
+## Token Transfer via Messages
 Chorpiler now supports modeling ERC-20 token transfers using BPMN message elements. Token transfer messages must follow the convention transfer_<amount>_<tokenSymbol>. For example, transfer_10_USDC models a transfer of 10 USDC tokens. The message models a token transfer frmo the initiator of the task to the receiver.
 
 For usage see also the tests defined in `tests/compiler`. For usage of the resulting smart contracts also see `tests/output`.
